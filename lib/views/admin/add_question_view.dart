@@ -5,7 +5,7 @@ import 'package:ophthal_vivaedge/core/constants/app_colors.dart';
 import 'package:ophthal_vivaedge/core/enums/answer_block_type.dart';
 import 'package:ophthal_vivaedge/models/answer_block_model.dart';
 import 'package:ophthal_vivaedge/models/question_model.dart';
-import 'package:ophthal_vivaedge/repositories/mock_question_repository.dart';
+import 'package:ophthal_vivaedge/viewmodels/viva_viewmodel.dart';
 import 'package:ophthal_vivaedge/shared/widgets/app_button.dart';
 import 'package:ophthal_vivaedge/shared/widgets/app_text_field.dart';
 import 'package:ophthal_vivaedge/viewmodels/admin_dashboard_viewmodel.dart';
@@ -114,7 +114,7 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
         answerBlocks: _blocks,
       );
 
-      final repo = MockQuestionRepository();
+      final repo = ref.read(questionRepositoryProvider);
       await repo.createQuestion(newQuestion);
       ref.invalidate(adminQuestionsViewModelProvider);
 

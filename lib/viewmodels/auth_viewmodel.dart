@@ -102,6 +102,10 @@ class AuthViewModel extends StateNotifier<AuthState> {
     }
   }
 
+  void updateUser(UserModel user) {
+    state = state.copyWith(user: user);
+  }
+
   Future<void> logout() async {
     await _authRepository.logout();
     state = const AuthState(user: null, isLoading: false);

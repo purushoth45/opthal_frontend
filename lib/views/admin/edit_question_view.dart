@@ -5,7 +5,7 @@ import 'package:ophthal_vivaedge/core/constants/app_colors.dart';
 import 'package:ophthal_vivaedge/core/enums/answer_block_type.dart';
 import 'package:ophthal_vivaedge/models/answer_block_model.dart';
 import 'package:ophthal_vivaedge/models/question_model.dart';
-import 'package:ophthal_vivaedge/repositories/mock_question_repository.dart';
+import 'package:ophthal_vivaedge/viewmodels/viva_viewmodel.dart';
 import 'package:ophthal_vivaedge/shared/widgets/app_button.dart';
 import 'package:ophthal_vivaedge/shared/widgets/app_text_field.dart';
 import 'package:ophthal_vivaedge/shared/widgets/loading_view.dart';
@@ -45,7 +45,7 @@ class _EditQuestionViewState extends ConsumerState<EditQuestionView> with Single
 
   Future<void> _loadQuestion() async {
     try {
-      final repo = MockQuestionRepository();
+      final repo = ref.read(questionRepositoryProvider);
       final question = await repo.getQuestionById(widget.questionId);
       setState(() {
         _questionController.text = question.questionText;
@@ -132,7 +132,7 @@ class _EditQuestionViewState extends ConsumerState<EditQuestionView> with Single
         answerBlocks: _blocks,
       );
 
-      final repo = MockQuestionRepository();
+      final repo = ref.read(questionRepositoryProvider);
       await repo.updateQuestion(widget.questionId, updatedQuestion);
       ref.invalidate(adminQuestionsViewModelProvider);
 

@@ -32,62 +32,25 @@ class AuthRepository {
       throw Exception('Email and password are required.');
     }
 
-    if (email.toLowerCase().contains('admin')) {
-      const adminUser = UserModel(
-        id: 1,
-        name: 'Dr. Faculty Admin',
-        email: 'admin@vivaedge.edu',
-        role: UserRole.admin,
-      );
-      await _storageService.saveToken('mock_admin_jwt_token');
-      await _storageService.saveUserData(jsonEncode(adminUser.toJson()));
-      return adminUser;
-    }
+    final response = await _apiClient.post(
+      '/auth/login',
+      body: {'email': email, 'password': password},
+    );
 
-    if (email.toLowerCase().contains('student') || email.toLowerCase().contains('mbbs')) {
-      const studentUser = UserModel(
-        id: 2,
-        name: 'Alex MBBS Student',
-        email: 'student@vivaedge.edu',
-        phoneNumber: '+91 98765 43210',
-        medicalCollege: 'Grant Medical College & JJ Hospital',
-        mbbsYear: 'Final Year MBBS',
-        role: UserRole.student,
-      );
-      await _storageService.saveToken('mock_student_jwt_token');
-      await _storageService.saveUserData(jsonEncode(studentUser.toJson()));
-      return studentUser;
-    }
-
-    try {
-      final response = await _apiClient.post(
-        '/auth/login',
-        body: {'email': email, 'password': password},
-      );
-
-      if (response != null && response is Map) {
-        final token = response['token'] as String? ?? '';
-        final userMap = response['user'] as Map<String, dynamic>? ?? {};
-        final user = UserModel.fromJson(userMap);
-
-        await _storageService.saveToken(token);
-        await _storageService.saveUserData(jsonEncode(user.toJson()));
-        return user;
+    if (response != null && response is Map) {
+      final token = response['token'] as String? ?? '';
+      if (token.isEmpty) {
+        throw Exception('Login failed: Token not found.');
       }
-    } catch (e) {
-      final userRole = email.toLowerCase().contains('admin') ? UserRole.admin : UserRole.student;
-      final defaultUser = UserModel(
-        id: 101,
-        name: userRole == UserRole.admin ? 'Faculty Admin' : 'MBBS Student',
-        email: email,
-        phoneNumber: '+91 98765 43210',
-        medicalCollege: 'Grant Medical College',
-        mbbsYear: 'Final Year MBBS',
-        role: userRole,
-      );
-      await _storageService.saveToken('fallback_token');
-      await _storageService.saveUserData(jsonEncode(defaultUser.toJson()));
-      return defaultUser;
+
+      await _storageService.saveToken(token);
+
+      // Retrieve full user profile
+      final profileResponse = await _apiClient.get('/users/profile');
+      final user = UserModel.fromJson(profileResponse as Map<String, dynamic>);
+
+      await _storageService.saveUserData(jsonEncode(user.toJson()));
+      return user;
     }
 
     throw Exception('Login failed. Invalid credentials.');
@@ -101,60 +64,81 @@ class AuthRepository {
     required String medicalCollege,
     required String mbbsYear,
   }) async {
-    final newUser = UserModel(
-      id: DateTime.now().millisecondsSinceEpoch % 10000,
-      name: name,
-      email: email,
-      phoneNumber: phoneNumber,
-      medicalCollege: medicalCollege,
-      mbbsYear: mbbsYear,
-      role: UserRole.student, // All registrations default to Student
+    final response = await _apiClient.post(
+      '/auth/register',
+      body: {
+        'name': name,
+        'email': email,
+        'password': password,
+        'confirmPassword': password,
+        'phone': phoneNumber,
+      },
     );
 
-    try {
-      final response = await _apiClient.post(
-        '/auth/register',
-        body: {
-          'name': name,
-          'email': email,
-          'password': password,
-          'phoneNumber': phoneNumber,
-          'medicalCollege': medicalCollege,
-          'mbbsYear': mbbsYear,
-          'role': UserRole.student.value,
-        },
-      );
-
-      if (response != null && response is Map) {
-        final token = response['token'] as String? ?? '';
-        final userMap = response['user'] as Map<String, dynamic>? ?? newUser.toJson();
-        final user = UserModel.fromJson(userMap);
-
-        await _storageService.saveToken(token);
-        await _storageService.saveUserData(jsonEncode(user.toJson()));
-        return user;
+    if (response != null) {
+      final resStr = response.toString();
+      if (resStr.contains('already registered') || resStr.contains('Email already registered')) {
+        throw Exception('Email is already registered.');
       }
-    } catch (_) {
-      await _storageService.saveToken('fallback_registered_token');
-      await _storageService.saveUserData(jsonEncode(newUser.toJson()));
+      if (resStr.contains('Passwords do not match')) {
+        throw Exception('Passwords do not match.');
+      }
+
+      // Auto login after successful registration
+      return await login(email: email, password: password);
     }
 
-    return newUser;
+    throw Exception('Registration failed.');
   }
 
   Future<bool> sendPasswordResetEmail(String email) async {
     if (email.trim().isEmpty) {
       throw Exception('Please enter a valid email address.');
     }
-    try {
-      await _apiClient.post(
-        '/auth/forgot-password',
-        body: {'email': email},
-      );
-    } catch (_) {
-      // Return true in mock mode so user gets positive confirmation
+    final response = await _apiClient.post(
+      '/auth/forgot-password',
+      body: {'email': email},
+    );
+    if (response != null && response is Map && response.containsKey('message')) {
+      return true;
     }
     return true;
+  }
+
+  Future<bool> resetPassword({
+    required String token,
+    required String newPassword,
+  }) async {
+    if (token.isEmpty || newPassword.isEmpty) {
+      throw Exception('Token and new password are required.');
+    }
+    await _apiClient.post(
+      '/auth/reset-password',
+      body: {
+        'token': token,
+        'newPassword': newPassword,
+      },
+    );
+    return true;
+  }
+
+  Future<UserModel> updateProfile({
+    required String name,
+    required String phoneNumber,
+  }) async {
+    final response = await _apiClient.put(
+      '/users/profile',
+      body: {
+        'name': name,
+        'phone': phoneNumber,
+      },
+    );
+    if (response != null && response is Map) {
+      final user = UserModel.fromJson(response as Map<String, dynamic>);
+      await _storageService.saveUserData(jsonEncode(user.toJson()));
+      return user;
+    }
+    throw Exception('Failed to update profile.');
   }
 
   Future<void> logout() async {

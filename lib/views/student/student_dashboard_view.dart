@@ -94,7 +94,7 @@ class _StudentDashboardViewState extends ConsumerState<StudentDashboardView> {
                                         ),
                                         const SizedBox(height: 2),
                                         Text(
-                                          '${user?.mbbsYear ?? "Final Year MBBS"} • ${user?.medicalCollege ?? "Grant Medical College"}',
+                                          'Role: ${user?.isAdmin == true ? "Faculty Admin" : "Student"} • Status: Active',
                                           style: const TextStyle(
                                             color: Colors.white70,
                                             fontSize: 12.5,

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ophthal_vivaedge/core/enums/viva_voice_state.dart';
 import 'package:ophthal_vivaedge/models/question_model.dart';
-import 'package:ophthal_vivaedge/repositories/mock_question_repository.dart';
+import 'package:ophthal_vivaedge/repositories/api_question_repository.dart';
 import 'package:ophthal_vivaedge/repositories/question_repository.dart';
 import 'package:ophthal_vivaedge/services/speech_service.dart';
 import 'package:ophthal_vivaedge/services/tts_service.dart';
@@ -242,7 +242,7 @@ class VivaViewModel extends StateNotifier<VivaState> {
 }
 
 final questionRepositoryProvider = Provider<QuestionRepository>((ref) {
-  return MockQuestionRepository();
+  return ApiQuestionRepository();
 });
 
 final vivaViewModelProvider = StateNotifierProvider<VivaViewModel, VivaState>((ref) {

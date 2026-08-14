@@ -60,9 +60,13 @@ class ApiClient {
   dynamic _handleResponse(http.Response response) {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       if (response.body.isEmpty) return null;
-      return jsonDecode(response.body);
+      try {
+        return jsonDecode(response.body);
+      } catch (_) {
+        return response.body;
+      }
     } else {
-      String errorMessage = 'Server error occurred (${response.statusCode})';
+      String errorMessage = response.body.isNotEmpty ? response.body : 'Server error occurred (${response.statusCode})';
       try {
         final body = jsonDecode(response.body);
         if (body is Map && body.containsKey('message')) {

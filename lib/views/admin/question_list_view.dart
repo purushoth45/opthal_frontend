@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ophthal_vivaedge/core/constants/app_colors.dart';
-import 'package:ophthal_vivaedge/repositories/mock_question_repository.dart';
+import 'package:ophthal_vivaedge/viewmodels/viva_viewmodel.dart';
 import 'package:ophthal_vivaedge/shared/widgets/confirmation_dialog.dart';
 import 'package:ophthal_vivaedge/shared/widgets/empty_view.dart';
 import 'package:ophthal_vivaedge/viewmodels/admin_dashboard_viewmodel.dart';
@@ -166,7 +166,7 @@ class _QuestionListViewState extends ConsumerState<QuestionListView> {
                                             content: 'Are you sure you want to delete this viva question?',
                                           );
                                           if (confirmed == true) {
-                                            final repo = MockQuestionRepository();
+                                            final repo = ref.read(questionRepositoryProvider);
                                             await repo.deleteQuestion(question.id);
                                             ref.invalidate(adminQuestionsViewModelProvider);
                                           }

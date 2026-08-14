@@ -28,6 +28,11 @@ class ProfileView extends ConsumerWidget {
         title: const Text('My Profile'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.edit_outlined, color: Colors.white),
+            tooltip: 'Edit Profile',
+            onPressed: () => _showEditProfileDialog(context, ref, user),
+          ),
+          IconButton(
             icon: const Icon(Icons.settings_outlined, color: Colors.white),
             onPressed: () => context.push('/settings'),
           ),
@@ -113,9 +118,9 @@ class ProfileView extends ConsumerWidget {
                                   color: Colors.white.withOpacity(0.25),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
-                                child: const Text(
-                                  'VERIFIED MBBS STUDENT',
-                                  style: TextStyle(
+                                child: Text(
+                                  user?.isAdmin == true ? 'FACULTY ADMIN' : 'VERIFIED STUDENT',
+                                  style: const TextStyle(
                                     fontSize: 11.5,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
@@ -130,7 +135,7 @@ class ProfileView extends ConsumerWidget {
                     ),
                     const SizedBox(height: 20),
 
-                    // ACADEMIC & CONTACT DETAILS CARD
+                    // ACCOUNT & CONTACT DETAILS CARD
                     ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: BackdropFilter(
@@ -146,7 +151,7 @@ class ProfileView extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'Academic & Contact Details',
+                                'Account & Contact Details',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -154,6 +159,33 @@ class ProfileView extends ConsumerWidget {
                                 ),
                               ),
                               const SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.25),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(Icons.email_outlined, size: 18, color: Colors.white),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Email Address', style: TextStyle(fontSize: 12, color: mutedTextColor)),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          user?.email ?? 'student@vivaedge.edu',
+                                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Colors.white),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Divider(height: 24, color: Colors.white30),
                               Row(
                                 children: [
                                   Container(
@@ -173,60 +205,6 @@ class ProfileView extends ConsumerWidget {
                                         const SizedBox(height: 2),
                                         Text(
                                           user?.phoneNumber ?? '+91 98765 43210',
-                                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Colors.white),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const Divider(height: 24, color: Colors.white30),
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.25),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(Icons.local_hospital_outlined, size: 18, color: Colors.white),
-                                  ),
-                                  const SizedBox(width: 14),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text('Medical College / Institution', style: TextStyle(fontSize: 12, color: mutedTextColor)),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          user?.medicalCollege ?? 'Grant Medical College & JJ Hospital',
-                                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Colors.white),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const Divider(height: 24, color: Colors.white30),
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.25),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(Icons.school_outlined, size: 18, color: Colors.white),
-                                  ),
-                                  const SizedBox(width: 14),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text('MBBS Stage', style: TextStyle(fontSize: 12, color: mutedTextColor)),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          user?.mbbsYear ?? 'Final Year MBBS',
                                           style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Colors.white),
                                         ),
                                       ],
@@ -326,6 +304,104 @@ class ProfileView extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void _showEditProfileDialog(BuildContext context, WidgetRef ref, UserModel? user) {
+    final nameController = TextEditingController(text: user?.name);
+    final phoneController = TextEditingController(text: user?.phoneNumber);
+    final formKey = GlobalKey<FormState>();
+    bool isSaving = false;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              title: const Text(
+                'Edit Profile',
+                style: TextStyle(color: AppColors.primaryNavy, fontWeight: FontWeight.bold),
+              ),
+              content: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: nameController,
+                      style: const TextStyle(color: AppColors.primaryNavy),
+                      decoration: const InputDecoration(
+                        labelText: 'Name',
+                        labelStyle: TextStyle(color: AppColors.textSecondary),
+                        prefixIcon: Icon(Icons.person_outline_rounded, color: AppColors.primaryNavy),
+                      ),
+                      validator: (val) => (val == null || val.trim().isEmpty) ? 'Please enter name' : null,
+                    ),
+                    const SizedBox(height: 14),
+                    TextFormField(
+                      controller: phoneController,
+                      style: const TextStyle(color: AppColors.primaryNavy),
+                      decoration: const InputDecoration(
+                        labelText: 'Phone Number',
+                        labelStyle: TextStyle(color: AppColors.textSecondary),
+                        prefixIcon: Icon(Icons.phone_outlined, color: AppColors.primaryNavy),
+                      ),
+                      validator: (val) => (val == null || val.trim().isEmpty) ? 'Please enter phone number' : null,
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSaving ? null : () => Navigator.pop(context),
+                  child: const Text('CANCEL', style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.bold)),
+                ),
+                ElevatedButton(
+                  onPressed: isSaving
+                      ? null
+                      : () async {
+                          if (!formKey.currentState!.validate()) return;
+                          setState(() => isSaving = true);
+                          try {
+                            final repo = ref.read(authRepositoryProvider);
+                            final updatedUser = await repo.updateProfile(
+                              name: nameController.text.trim(),
+                              phoneNumber: phoneController.text.trim(),
+                            );
+                            ref.read(authViewModelProvider.notifier).updateUser(updatedUser);
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Profile updated successfully!')),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Failed to update profile: $e')),
+                              );
+                            }
+                          } finally {
+                            if (context.mounted) setState(() => isSaving = false);
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryNavy,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: isSaving
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      : const Text('SAVE', style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }

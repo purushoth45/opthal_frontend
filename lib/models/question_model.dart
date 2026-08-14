@@ -23,8 +23,8 @@ class QuestionModel {
 
     return QuestionModel(
       id: json['id'] as int? ?? 0,
-      questionText: json['question'] as String? ?? json['questionText'] as String? ?? '',
-      topic: json['topic'] as String? ?? 'General Ophthalmology',
+      questionText: json['questionText'] as String? ?? json['question'] as String? ?? '',
+      topic: json['category'] as String? ?? json['topic'] as String? ?? 'General Ophthalmology',
       answerBlocks: blocks,
     );
   }
@@ -32,7 +32,9 @@ class QuestionModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'questionText': questionText,
       'question': questionText,
+      'category': topic,
       'topic': topic,
       'answerBlocks': answerBlocks.map((b) => b.toJson()).toList(),
     };

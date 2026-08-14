@@ -2,21 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ophthal_vivaedge/core/constants/app_colors.dart';
 import 'package:ophthal_vivaedge/models/question_model.dart';
-import 'package:ophthal_vivaedge/repositories/mock_question_repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ophthal_vivaedge/viewmodels/viva_viewmodel.dart';
 import 'package:ophthal_vivaedge/shared/widgets/error_view.dart';
 import 'package:ophthal_vivaedge/shared/widgets/loading_view.dart';
 import 'package:ophthal_vivaedge/views/widgets/answer_content_renderer.dart';
 
-class QuestionPreviewView extends StatefulWidget {
+class QuestionPreviewView extends ConsumerStatefulWidget {
   final int questionId;
 
   const QuestionPreviewView({super.key, required this.questionId});
 
   @override
-  State<QuestionPreviewView> createState() => _QuestionPreviewViewState();
+  ConsumerState<QuestionPreviewView> createState() => _QuestionPreviewViewState();
 }
 
-class _QuestionPreviewViewState extends State<QuestionPreviewView> {
+class _QuestionPreviewViewState extends ConsumerState<QuestionPreviewView> {
   QuestionModel? _question;
   bool _isLoading = true;
   String? _error;
@@ -33,7 +34,7 @@ class _QuestionPreviewViewState extends State<QuestionPreviewView> {
       _error = null;
     });
     try {
-      final repo = MockQuestionRepository();
+      final repo = ref.read(questionRepositoryProvider);
       final q = await repo.getQuestionById(widget.questionId);
       setState(() {
         _question = q;
