@@ -1,0 +1,15 @@
+class ApiConfig {
+  ApiConfig._();
+
+  // Centralized Base URL (Configurable for emulator, simulator, physical device)
+  // Android Emulator: http://10.0.2.2:8080
+  // iOS Simulator / Web / Desktop: http://localhost:8080
+  static const String baseUrl = 'http://10.0.2.2:8080/api';
+
+  static const Duration timeout = Duration(seconds: 15);
+
+  // Endpoints
+  static const String login = '/auth/login';
+  static const String register = '/auth/register';
+  static const String questions = '/questions';
+}
