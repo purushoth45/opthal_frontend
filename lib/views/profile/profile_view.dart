@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ophthal_vivaedge/core/constants/app_colors.dart';
+import 'package:ophthal_vivaedge/models/user_model.dart';
 import 'package:ophthal_vivaedge/services/secure_storage_service.dart';
 import 'package:ophthal_vivaedge/viewmodels/auth_viewmodel.dart';
 import 'package:ophthal_vivaedge/views/widgets/app_background_wrapper.dart';
@@ -256,6 +257,14 @@ class ProfileView extends ConsumerWidget {
                               ),
                               const Divider(height: 1, color: Colors.white30),
                               ListTile(
+                                leading: const Icon(Icons.lock_outline_rounded, color: Colors.white),
+                                title: const Text('Change Password', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                                subtitle: const Text('Update account security password', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                                trailing: const Icon(Icons.chevron_right_rounded, color: Colors.white70),
+                                onTap: () => _showChangePasswordDialog(context, ref),
+                              ),
+                              const Divider(height: 1, color: Colors.white30),
+                              ListTile(
                                 leading: const Icon(Icons.help_outline_rounded, color: Colors.white),
                                 title: const Text('Help & Support', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
                                 subtitle: const Text('Viva Voce practice guidelines', style: TextStyle(color: Colors.white70, fontSize: 12)),
@@ -382,6 +391,155 @@ class ProfileView extends ConsumerWidget {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text('Failed to update profile: $e')),
+                              );
+                            }
+                          } finally {
+                            if (context.mounted) setState(() => isSaving = false);
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryNavy,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: isSaving
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      : const Text('SAVE', style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showChangePasswordDialog(BuildContext context, WidgetRef ref) {
+    final currentPasswordController = TextEditingController();
+    final newPasswordController = TextEditingController();
+    final confirmPasswordController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    bool isSaving = false;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              title: const Text(
+                'Change Password',
+                style: TextStyle(color: AppColors.primaryNavy, fontWeight: FontWeight.bold),
+              ),
+              content: Form(
+                key: formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: currentPasswordController,
+                        obscureText: true,
+                        style: const TextStyle(color: AppColors.primaryNavy),
+                        decoration: const InputDecoration(
+                          labelText: 'Current Password',
+                          labelStyle: TextStyle(color: AppColors.textSecondary),
+                          prefixIcon: Icon(Icons.lock_open_rounded, color: AppColors.primaryNavy),
+                        ),
+                        validator: (val) => (val == null || val.isEmpty) ? 'Please enter current password' : null,
+                      ),
+                      const SizedBox(height: 14),
+                      TextFormField(
+                        controller: newPasswordController,
+                        obscureText: true,
+                        style: const TextStyle(color: AppColors.primaryNavy),
+                        decoration: const InputDecoration(
+                          labelText: 'New Password',
+                          labelStyle: TextStyle(color: AppColors.textSecondary),
+                          prefixIcon: Icon(Icons.lock_outline_rounded, color: AppColors.primaryNavy),
+                        ),
+                        validator: (val) {
+                          if (val == null || val.isEmpty) {
+                            return 'Please enter new password';
+                          }
+                          if (val.length < 6) {
+                            return 'Password must be at least 6 characters';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 14),
+                      TextFormField(
+                        controller: confirmPasswordController,
+                        obscureText: true,
+                        style: const TextStyle(color: AppColors.primaryNavy),
+                        decoration: const InputDecoration(
+                          labelText: 'Confirm New Password',
+                          labelStyle: TextStyle(color: AppColors.textSecondary),
+                          prefixIcon: Icon(Icons.lock_rounded, color: AppColors.primaryNavy),
+                        ),
+                        validator: (val) {
+                          if (val == null || val.isEmpty) {
+                            return 'Please confirm new password';
+                          }
+                          if (val != newPasswordController.text) {
+                            return 'Passwords do not match';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSaving ? null : () => Navigator.pop(context),
+                  child: const Text('CANCEL', style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.bold)),
+                ),
+                ElevatedButton(
+                  onPressed: isSaving
+                      ? null
+                      : () async {
+                          if (!formKey.currentState!.validate()) return;
+                          setState(() => isSaving = true);
+                          try {
+                            final success = await ref.read(authViewModelProvider.notifier).changePassword(
+                              currentPassword: currentPasswordController.text,
+                              newPassword: newPasswordController.text,
+                              confirmNewPassword: confirmPasswordController.text,
+                            );
+                            if (success) {
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Password changed successfully!'),
+                                    backgroundColor: AppColors.success,
+                                  ),
+                                );
+                              }
+                            } else {
+                              final authState = ref.read(authViewModelProvider);
+                              final error = authState.errorMessage ?? 'Failed to change password.';
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(error),
+                                    backgroundColor: AppColors.error,
+                                  ),
+                                );
+                              }
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error: $e'),
+                                  backgroundColor: AppColors.error,
+                                ),
                               );
                             }
                           } finally {

@@ -316,21 +316,7 @@ class _LoginViewState extends ConsumerState<LoginView> with SingleTickerProvider
                                   ),
                                   const SizedBox(height: 8),
 
-                                  // FORGOT PASSWORD LINK
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: GestureDetector(
-                                      onTap: () => context.push('/auth/forgot-password'),
-                                      child: const Text(
-                                        'Forgot Password?',
-                                        style: TextStyle(
-                                          color: AppColors.accentBlue,
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+
 
                                   const SizedBox(height: 24),
 

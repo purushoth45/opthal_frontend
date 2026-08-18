@@ -66,7 +66,7 @@ class VivaViewModel extends StateNotifier<VivaState> {
     QuestionRepository? repository,
     SpeechService? speechService,
     TtsService? ttsService,
-  })  : _repository = repository ?? MockQuestionRepository(),
+  })  : _repository = repository ?? ApiQuestionRepository(),
         _speechService = speechService ?? SpeechService(),
         _ttsService = ttsService ?? TtsService(),
         super(const VivaState()) {

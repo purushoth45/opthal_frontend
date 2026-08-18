@@ -7,7 +7,6 @@ import 'package:ophthal_vivaedge/views/admin/admin_dashboard_view.dart';
 import 'package:ophthal_vivaedge/views/admin/edit_question_view.dart';
 import 'package:ophthal_vivaedge/views/admin/question_list_view.dart';
 import 'package:ophthal_vivaedge/views/admin/question_preview_view.dart';
-import 'package:ophthal_vivaedge/views/auth/forgot_password_view.dart';
 import 'package:ophthal_vivaedge/views/auth/login_view.dart';
 import 'package:ophthal_vivaedge/views/auth/register_view.dart';
 import 'package:ophthal_vivaedge/views/main_shell_view.dart';
@@ -74,10 +73,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/auth/register',
         builder: (context, state) => const RegisterView(),
-      ),
-      GoRoute(
-        path: '/auth/forgot-password',
-        builder: (context, state) => const ForgotPasswordView(),
       ),
       GoRoute(
         path: '/student/dashboard',

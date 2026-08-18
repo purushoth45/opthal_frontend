@@ -1,3 +1,5 @@
+import 'package:ophthal_vivaedge/core/enums/answer_block_type.dart';
+import 'package:ophthal_vivaedge/models/answer_block_model.dart';
 import 'package:ophthal_vivaedge/models/question_model.dart';
 import 'package:ophthal_vivaedge/repositories/question_repository.dart';
 import 'package:ophthal_vivaedge/services/api_client.dart';

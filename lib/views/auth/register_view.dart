@@ -18,24 +18,15 @@ class _RegisterViewState extends ConsumerState<RegisterView> with SingleTickerPr
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _collegeController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  String _selectedMbbsYear = 'Final Year MBBS';
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
   late Animation<Offset> _slideAnim;
-
-  final List<String> _mbbsYears = const [
-    '3rd Year MBBS',
-    'Final Year MBBS',
-    'Intern / CRRI',
-    'Postgraduate Resident',
-  ];
 
   @override
   void initState() {
@@ -66,7 +57,6 @@ class _RegisterViewState extends ConsumerState<RegisterView> with SingleTickerPr
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
-    _collegeController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _animController.dispose();
@@ -81,12 +71,16 @@ class _RegisterViewState extends ConsumerState<RegisterView> with SingleTickerPr
           email: _emailController.text.trim(),
           password: _passwordController.text,
           phoneNumber: _phoneController.text.trim(),
-          medicalCollege: _collegeController.text.trim(),
-          mbbsYear: _selectedMbbsYear,
         );
 
     if (success && mounted) {
-      context.go('/student/dashboard');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Registration successful! Please log in.'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+      context.go('/auth/login');
     }
   }
 
@@ -263,50 +257,6 @@ class _RegisterViewState extends ConsumerState<RegisterView> with SingleTickerPr
                                       prefixIcon: const Icon(Icons.phone_outlined, size: 20, color: AppColors.primaryNavy),
                                       validator: (val) =>
                                           (val == null || val.trim().isEmpty) ? 'Please enter your phone number' : null,
-                                    ),
-                                    const SizedBox(height: 16),
-
-                                    AppTextField(
-                                      label: 'Medical College / University',
-                                      hint: 'e.g. Grant Medical College & JJ Hospital',
-                                      controller: _collegeController,
-                                      prefixIcon: const Icon(Icons.local_hospital_outlined, size: 20, color: AppColors.primaryNavy),
-                                      validator: (val) =>
-                                          (val == null || val.trim().isEmpty) ? 'Please enter your medical college' : null,
-                                    ),
-                                    const SizedBox(height: 16),
-
-                                    const Text(
-                                      'MBBS Academic Stage',
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.primaryNavy,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    DropdownButtonFormField<String>(
-                                      value: _selectedMbbsYear,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.primaryNavy,
-                                      ),
-                                      decoration: const InputDecoration(
-                                        prefixIcon: Icon(Icons.school_outlined, size: 20, color: AppColors.primaryNavy),
-                                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                                      ),
-                                      items: _mbbsYears.map((year) {
-                                        return DropdownMenuItem<String>(
-                                          value: year,
-                                          child: Text(year, style: const TextStyle(fontSize: 14, color: AppColors.primaryNavy)),
-                                        );
-                                      }).toList(),
-                                      onChanged: (val) {
-                                        if (val != null) {
-                                          setState(() => _selectedMbbsYear = val);
-                                        }
-                                      },
                                     ),
                                     const SizedBox(height: 16),
 

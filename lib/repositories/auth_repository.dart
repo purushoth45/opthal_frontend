@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:ophthal_vivaedge/core/enums/user_role.dart';
 import 'package:ophthal_vivaedge/models/user_model.dart';
 import 'package:ophthal_vivaedge/services/api_client.dart';
 import 'package:ophthal_vivaedge/services/secure_storage_service.dart';
@@ -56,13 +55,11 @@ class AuthRepository {
     throw Exception('Login failed. Invalid credentials.');
   }
 
-  Future<UserModel> register({
+  Future<void> register({
     required String name,
     required String email,
     required String password,
     required String phoneNumber,
-    required String medicalCollege,
-    required String mbbsYear,
   }) async {
     final response = await _apiClient.post(
       '/auth/register',
@@ -83,9 +80,9 @@ class AuthRepository {
       if (resStr.contains('Passwords do not match')) {
         throw Exception('Passwords do not match.');
       }
-
-      // Auto login after successful registration
-      return await login(email: email, password: password);
+      if (resStr.contains('registered successfully') || resStr.contains('registered')) {
+        return;
+      }
     }
 
     throw Exception('Registration failed.');
@@ -139,6 +136,21 @@ class AuthRepository {
       return user;
     }
     throw Exception('Failed to update profile.');
+  }
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String confirmNewPassword,
+  }) async {
+    await _apiClient.put(
+      '/users/profile/password',
+      body: {
+        'currentPassword': currentPassword,
+        'newPassword': newPassword,
+        'confirmNewPassword': confirmNewPassword,
+      },
+    );
   }
 
   Future<void> logout() async {
