@@ -74,6 +74,26 @@ class ApiQuestionRepository implements QuestionRepository {
             'rows': block.rows ?? [],
           },
         );
+      } else if (block.type == AnswerBlockType.image) {
+        if (block.imageBytes != null) {
+          await _apiClient.uploadMultipart(
+            '/questions/$questionId/answers/image',
+            fileField: 'file',
+            fileBytes: block.imageBytes,
+            filename: block.localFileName ?? 'upload.jpg',
+            fields: {'displayOrder': block.displayOrder.toString()},
+          );
+        } else if (block.content != null && block.content!.trim().isNotEmpty) {
+          final contentStr = block.content!.trim();
+          if (contentStr.contains('/') || contentStr.contains('\\')) {
+            await _apiClient.uploadMultipart(
+              '/questions/$questionId/answers/image',
+              fileField: 'file',
+              filePath: contentStr,
+              fields: {'displayOrder': block.displayOrder.toString()},
+            );
+          }
+        }
       }
     }
 
@@ -129,6 +149,26 @@ class ApiQuestionRepository implements QuestionRepository {
               'rows': block.rows ?? [],
             },
           );
+        } else if (block.type == AnswerBlockType.image) {
+          if (block.imageBytes != null) {
+            await _apiClient.uploadMultipart(
+              '/questions/$id/answers/image',
+              fileField: 'file',
+              fileBytes: block.imageBytes,
+              filename: block.localFileName ?? 'upload.jpg',
+              fields: {'displayOrder': block.displayOrder.toString()},
+            );
+          } else if (block.content != null && block.content!.trim().isNotEmpty) {
+            final contentStr = block.content!.trim();
+            if (contentStr.contains('/') || contentStr.contains('\\')) {
+              await _apiClient.uploadMultipart(
+                '/questions/$id/answers/image',
+                fileField: 'file',
+                filePath: contentStr,
+                fields: {'displayOrder': block.displayOrder.toString()},
+              );
+            }
+          }
         }
       } else {
         // Update block
@@ -149,6 +189,16 @@ class ApiQuestionRepository implements QuestionRepository {
               'columns': block.columns ?? [],
               'rows': block.rows ?? [],
             },
+          );
+        } else if (block.type == AnswerBlockType.image && block.imageBytes != null) {
+          // If a new image was picked for an existing block, delete old block and upload new
+          await _apiClient.delete('/questions/$id/answers/$blockId');
+          await _apiClient.uploadMultipart(
+            '/questions/$id/answers/image',
+            fileField: 'file',
+            fileBytes: block.imageBytes,
+            filename: block.localFileName ?? 'upload.jpg',
+            fields: {'displayOrder': block.displayOrder.toString()},
           );
         }
       }

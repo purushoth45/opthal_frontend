@@ -2,6 +2,7 @@ enum AnswerBlockType {
   text,
   heading,
   table,
+  image,
 }
 
 extension AnswerBlockTypeX on AnswerBlockType {
@@ -13,6 +14,8 @@ extension AnswerBlockTypeX on AnswerBlockType {
         return 'HEADING';
       case AnswerBlockType.table:
         return 'TABLE';
+      case AnswerBlockType.image:
+        return 'IMAGE';
     }
   }
 
@@ -22,6 +25,8 @@ extension AnswerBlockTypeX on AnswerBlockType {
         return AnswerBlockType.heading;
       case 'TABLE':
         return AnswerBlockType.table;
+      case 'IMAGE':
+        return AnswerBlockType.image;
       case 'TEXT':
       default:
         return AnswerBlockType.text;

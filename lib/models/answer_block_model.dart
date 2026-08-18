@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:ophthal_vivaedge/core/enums/answer_block_type.dart';
 
 class AnswerBlockModel {
@@ -7,6 +8,8 @@ class AnswerBlockModel {
   final int displayOrder;
   final List<String>? columns;
   final List<List<String>>? rows;
+  final Uint8List? imageBytes;
+  final String? localFileName;
 
   const AnswerBlockModel({
     this.id,
@@ -15,6 +18,8 @@ class AnswerBlockModel {
     required this.displayOrder,
     this.columns,
     this.rows,
+    this.imageBytes,
+    this.localFileName,
   });
 
   factory AnswerBlockModel.text({
@@ -55,6 +60,23 @@ class AnswerBlockModel {
       displayOrder: displayOrder,
       columns: columns,
       rows: rows,
+    );
+  }
+
+  factory AnswerBlockModel.image({
+    int? id,
+    required String filename,
+    required int displayOrder,
+    Uint8List? imageBytes,
+    String? localFileName,
+  }) {
+    return AnswerBlockModel(
+      id: id,
+      type: AnswerBlockType.image,
+      content: filename,
+      displayOrder: displayOrder,
+      imageBytes: imageBytes,
+      localFileName: localFileName,
     );
   }
 
@@ -118,6 +140,8 @@ class AnswerBlockModel {
     int? displayOrder,
     List<String>? columns,
     List<List<String>>? rows,
+    Uint8List? imageBytes,
+    String? localFileName,
   }) {
     return AnswerBlockModel(
       id: id ?? this.id,
@@ -126,6 +150,8 @@ class AnswerBlockModel {
       displayOrder: displayOrder ?? this.displayOrder,
       columns: columns ?? (this.columns != null ? List<String>.from(this.columns!) : null),
       rows: rows ?? this.rows?.map((r) => List<String>.from(r)).toList(),
+      imageBytes: imageBytes ?? this.imageBytes,
+      localFileName: localFileName ?? this.localFileName,
     );
   }
 }

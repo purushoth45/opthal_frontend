@@ -57,6 +57,46 @@ class ApiClient {
     return _handleResponse(response);
   }
 
+  Future<dynamic> uploadMultipart(
+    String path, {
+    required String fileField,
+    String? filePath,
+    List<int>? fileBytes,
+    String? filename,
+    Map<String, String>? fields,
+  }) async {
+    final url = Uri.parse('${ApiConfig.baseUrl}$path');
+    final token = await _storageService.getToken();
+    final request = http.MultipartRequest('POST', url);
+
+    if (token != null && token.isNotEmpty) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+
+    if (fields != null) {
+      request.fields.addAll(fields);
+    }
+
+    if (fileBytes != null) {
+      request.files.add(http.MultipartFile.fromBytes(
+        fileField,
+        fileBytes,
+        filename: filename ?? 'upload.jpg',
+      ));
+    } else if (filePath != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        fileField,
+        filePath,
+        filename: filename,
+      ));
+    }
+
+    final streamedResponse = await _client.send(request).timeout(ApiConfig.timeout);
+    final response = await http.Response.fromStream(streamedResponse);
+    return _handleResponse(response);
+  }
+
+
   dynamic _handleResponse(http.Response response) {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       if (response.body.isEmpty) return null;

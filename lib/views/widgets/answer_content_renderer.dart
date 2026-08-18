@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ophthal_vivaedge/core/enums/answer_block_type.dart';
 import 'package:ophthal_vivaedge/models/answer_block_model.dart';
 import 'package:ophthal_vivaedge/views/widgets/heading_block_widget.dart';
+import 'package:ophthal_vivaedge/views/widgets/image_block_widget.dart';
 import 'package:ophthal_vivaedge/views/widgets/medical_answer_table.dart';
 import 'package:ophthal_vivaedge/views/widgets/text_block_widget.dart';
 
@@ -39,6 +40,8 @@ class AnswerContentRenderer extends StatelessWidget {
             return HeadingBlockWidget(block: block);
           case AnswerBlockType.table:
             return MedicalAnswerTable(block: block);
+          case AnswerBlockType.image:
+            return ImageBlockWidget(block: block);
         }
       }).toList(),
     );

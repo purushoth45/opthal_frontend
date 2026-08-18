@@ -11,6 +11,7 @@ import 'package:ophthal_vivaedge/shared/widgets/app_text_field.dart';
 import 'package:ophthal_vivaedge/viewmodels/admin_dashboard_viewmodel.dart';
 import 'package:ophthal_vivaedge/views/widgets/answer_content_renderer.dart';
 import 'package:ophthal_vivaedge/views/widgets/heading_block_editor.dart';
+import 'package:ophthal_vivaedge/views/widgets/image_block_editor.dart';
 import 'package:ophthal_vivaedge/views/widgets/table_block_editor.dart';
 import 'package:ophthal_vivaedge/views/widgets/text_block_editor.dart';
 
@@ -66,6 +67,11 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
           rows: [
             ['Cell 1', 'Cell 2']
           ],
+          displayOrder: newOrder,
+        ));
+      } else if (type == AnswerBlockType.image) {
+        _blocks.add(AnswerBlockModel.image(
+          filename: '',
           displayOrder: newOrder,
         ));
       }
@@ -241,38 +247,46 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
                                 onMoveUp: index > 0 ? () => _moveBlock(index, -1) : null,
                                 onMoveDown: index < _blocks.length - 1 ? () => _moveBlock(index, 1) : null,
                               );
+                            case AnswerBlockType.image:
+                              return ImageBlockEditor(
+                                block: block,
+                                onChanged: (updated) => setState(() => _blocks[index] = updated),
+                                onDelete: () => _deleteBlock(index),
+                                onMoveUp: index > 0 ? () => _moveBlock(index, -1) : null,
+                                onMoveDown: index < _blocks.length - 1 ? () => _moveBlock(index, 1) : null,
+                              );
                           }
                         }),
 
                         const SizedBox(height: 12),
 
-                        Row(
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
                           children: [
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: () => _addBlock(AnswerBlockType.text),
-                                icon: const Icon(Icons.notes_rounded, size: 16),
-                                label: const Text('+ Text'),
-                              ),
+                            OutlinedButton.icon(
+                              onPressed: () => _addBlock(AnswerBlockType.text),
+                              icon: const Icon(Icons.notes_rounded, size: 16),
+                              label: const Text('+ Text'),
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: () => _addBlock(AnswerBlockType.heading),
-                                icon: const Icon(Icons.title_rounded, size: 16),
-                                label: const Text('+ Heading'),
-                              ),
+                            OutlinedButton.icon(
+                              onPressed: () => _addBlock(AnswerBlockType.heading),
+                              icon: const Icon(Icons.title_rounded, size: 16),
+                              label: const Text('+ Heading'),
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: () => _addBlock(AnswerBlockType.table),
-                                icon: const Icon(Icons.table_chart_outlined, size: 16),
-                                label: const Text('+ Table'),
-                              ),
+                            OutlinedButton.icon(
+                              onPressed: () => _addBlock(AnswerBlockType.table),
+                              icon: const Icon(Icons.table_chart_outlined, size: 16),
+                              label: const Text('+ Table'),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: () => _addBlock(AnswerBlockType.image),
+                              icon: const Icon(Icons.image_outlined, size: 16),
+                              label: const Text('+ Image'),
                             ),
                           ],
                         ),
+
 
                         const SizedBox(height: 32),
 
