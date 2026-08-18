@@ -21,19 +21,21 @@ class AdminDashboardView extends ConsumerWidget {
         backgroundColor: AppColors.primaryNavy,
         foregroundColor: Colors.white,
         title: const Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.admin_panel_settings_rounded, size: 22, color: Colors.white),
+            Icon(Icons.admin_panel_settings_rounded, size: 20, color: Colors.white),
             SizedBox(width: 8),
             Text(
               'OPHTHAL VIVAEDGE',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
             ),
           ],
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 12.0),
+            padding: const EdgeInsets.only(right: 8.0),
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 GestureDetector(
                   onTap: () => context.push('/profile'),
@@ -46,17 +48,24 @@ class AdminDashboardView extends ConsumerWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  user?.name ?? 'Admin',
-                  style: const TextStyle(color: Colors.white, fontSize: 13),
+                const SizedBox(width: 6),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 90),
+                  child: Text(
+                    user?.name ?? 'Admin',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: Colors.white, fontSize: 13),
+                  ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.settings_outlined, color: Colors.white70, size: 20),
+                  icon: const Icon(Icons.settings_outlined, color: Colors.white70, size: 19),
+                  tooltip: 'Settings',
                   onPressed: () => context.push('/settings'),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.logout_rounded, color: Colors.white70, size: 20),
+                  icon: const Icon(Icons.logout_rounded, color: Colors.white70, size: 19),
+                  tooltip: 'Sign Out',
                   onPressed: () async {
                     await ref.read(authViewModelProvider.notifier).logout();
                     if (context.mounted) {
@@ -69,218 +78,415 @@ class AdminDashboardView extends ConsumerWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 900),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Welcome, Admin',
-                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                color: AppColors.primaryNavy,
-                                fontWeight: FontWeight.bold,
-                              ),
-                        ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          'Manage your interactive ophthalmology viva question bank',
-                          style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-                        ),
-                      ],
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: () => context.push('/admin/questions/add'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.accentBlue,
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                      ),
-                      icon: const Icon(Icons.add_rounded, size: 20),
-                      label: const Text('+ Add Question'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-
-                questionsAsync.when(
-                  data: (questions) {
-                    return Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: AppColors.border),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Total Questions',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  '${questions.length}',
-                                  style: const TextStyle(
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 900),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // RESPONSIVE HEADER ROW
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isNarrow = constraints.maxWidth < 600;
+                      if (isNarrow) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Welcome, Admin',
+                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                     color: AppColors.primaryNavy,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            const SizedBox(height: 4),
+                            const Text(
+                              'Manage your interactive ophthalmology viva question bank',
+                              style: TextStyle(color: AppColors.textSecondary, fontSize: 13.5),
+                            ),
+                            const SizedBox(height: 14),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                onPressed: () => context.push('/admin/questions/add'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.accentBlue,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
-                              ],
+                                icon: const Icon(Icons.add_rounded, size: 20),
+                                label: const Text('+ Add Question', style: TextStyle(fontWeight: FontWeight.bold)),
+                              ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: AppColors.border),
-                            ),
+                          ],
+                        );
+                      }
+
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'Active Modules',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
                                 Text(
-                                  '${questions.map((q) => q.topic).toSet().length}',
-                                  style: const TextStyle(
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.success,
-                                  ),
+                                  'Welcome, Admin',
+                                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                        color: AppColors.primaryNavy,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                                const SizedBox(height: 4),
+                                const Text(
+                                  'Manage your interactive ophthalmology viva question bank',
+                                  style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
                                 ),
                               ],
                             ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                  loading: () => const SizedBox(
-                    height: 80,
-                    child: Center(child: CircularProgressIndicator()),
+                          const SizedBox(width: 16),
+                          ElevatedButton.icon(
+                            onPressed: () => context.push('/admin/questions/add'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.accentBlue,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            icon: const Icon(Icons.add_rounded, size: 20),
+                            label: const Text('+ Add Question', style: TextStyle(fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      );
+                    },
                   ),
-                  error: (e, s) => const SizedBox.shrink(),
-                ),
+                  const SizedBox(height: 24),
 
-                const SizedBox(height: 28),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Recent Question Bank',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primaryNavy,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => context.push('/admin/questions'),
-                      child: const Text('View All Questions →'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-
-                questionsAsync.when(
-                  data: (questions) {
-                    return Column(
-                      children: questions.map((question) {
-                        return Card(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            leading: CircleAvatar(
-                              backgroundColor: AppColors.lightBlueBg,
-                              child: Text(
-                                'Q${question.id}',
-                                style: const TextStyle(
-                                  color: AppColors.primaryNavy,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                  // RESPONSIVE CARDS ROW
+                  questionsAsync.when(
+                    data: (questions) {
+                      final totalCard = Container(
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: AppColors.border),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.02),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
                             ),
-                            title: Text(
-                              question.questionText,
-                              style: const TextStyle(
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Total Questions',
+                              style: TextStyle(
+                                fontSize: 13,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                color: AppColors.textPrimary,
+                                color: AppColors.textSecondary,
                               ),
                             ),
-                            subtitle: Text(
-                              '${question.topic} • ${question.answerBlocks.length} answer block(s)',
-                              style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${questions.length}',
+                              style: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primaryNavy,
+                              ),
                             ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
+                          ],
+                        ),
+                      );
+
+                      final activeModulesCard = Container(
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: AppColors.border),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.02),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Active Modules',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${questions.map((q) => q.topic).toSet().length}',
+                              style: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.success,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      return LayoutBuilder(
+                        builder: (context, constraints) {
+                          if (constraints.maxWidth < 480) {
+                            return Column(
                               children: [
-                                IconButton(
-                                  icon: const Icon(Icons.remove_red_eye_outlined, size: 20, color: AppColors.accentBlue),
-                                  tooltip: 'Preview Student View',
-                                  onPressed: () => context.push('/admin/questions/preview/${question.id}'),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.edit_outlined, size: 20, color: AppColors.primaryNavy),
-                                  tooltip: 'Edit Question',
-                                  onPressed: () => context.push('/admin/questions/edit/${question.id}'),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete_outline_rounded, size: 20, color: AppColors.error),
-                                  tooltip: 'Delete Question',
-                                  onPressed: () async {
-                                    final confirmed = await ConfirmationDialog.show(
-                                      context,
-                                      title: 'Delete Question?',
-                                      content: 'Are you sure you want to delete question Q00${question.id}? This action cannot be undone.',
-                                    );
-                                    if (confirmed == true) {
-                                      final repo = ref.read(questionRepositoryProvider);
-                                      await repo.deleteQuestion(question.id);
-                                      ref.invalidate(adminQuestionsViewModelProvider);
-                                    }
-                                  },
-                                ),
+                                SizedBox(width: double.infinity, child: totalCard),
+                                const SizedBox(height: 12),
+                                SizedBox(width: double.infinity, child: activeModulesCard),
                               ],
+                            );
+                          }
+                          return Row(
+                            children: [
+                              Expanded(child: totalCard),
+                              const SizedBox(width: 14),
+                              Expanded(child: activeModulesCard),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    loading: () => const SizedBox(
+                      height: 80,
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                    error: (e, s) => const SizedBox.shrink(),
+                  ),
+
+                  const SizedBox(height: 28),
+
+                  // RECENT QUESTION BANK HEADER
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Recent Question Bank',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primaryNavy,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => context.push('/admin/questions'),
+                        child: const Text(
+                          'View All Questions →',
+                          style: TextStyle(
+                            color: AppColors.accentBlue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // QUESTION CARDS LIST
+                  questionsAsync.when(
+                    data: (questions) {
+                      if (questions.isEmpty) {
+                        return Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppColors.border),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'No questions created yet. Click "+ Add Question" to get started.',
+                              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
                             ),
                           ),
                         );
-                      }).toList(),
-                    );
-                  },
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (err, stack) => Text('Error: $err'),
-                ),
-              ],
+                      }
+
+                      return Column(
+                        children: questions.map((question) {
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                              child: LayoutBuilder(
+                                builder: (context, itemConstraints) {
+                                  final isMobileItem = itemConstraints.maxWidth < 450;
+
+                                  if (isMobileItem) {
+                                    return Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 14,
+                                              backgroundColor: AppColors.lightBlueBg,
+                                              child: Text(
+                                                'Q${question.id}',
+                                                style: const TextStyle(
+                                                  color: AppColors.primaryNavy,
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: Text(
+                                                question.questionText,
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14,
+                                                  color: AppColors.textPrimary,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          '${question.topic} • ${question.answerBlocks.length} block(s)',
+                                          style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                                        ),
+                                        const Divider(height: 16),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          children: [
+                                            IconButton(
+                                              icon: const Icon(Icons.remove_red_eye_outlined, size: 20, color: AppColors.accentBlue),
+                                              tooltip: 'Preview',
+                                              onPressed: () => context.push('/admin/questions/preview/${question.id}'),
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(Icons.edit_outlined, size: 20, color: AppColors.primaryNavy),
+                                              tooltip: 'Edit',
+                                              onPressed: () => context.push('/admin/questions/edit/${question.id}'),
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(Icons.delete_outline_rounded, size: 20, color: AppColors.error),
+                                              tooltip: 'Delete',
+                                              onPressed: () async {
+                                                final confirmed = await ConfirmationDialog.show(
+                                                  context,
+                                                  title: 'Delete Question?',
+                                                  content: 'Are you sure you want to delete question Q00${question.id}? This action cannot be undone.',
+                                                );
+                                                if (confirmed == true) {
+                                                  final repo = ref.read(questionRepositoryProvider);
+                                                  await repo.deleteQuestion(question.id);
+                                                  ref.invalidate(adminQuestionsViewModelProvider);
+                                                }
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    );
+                                  }
+
+                                  return Row(
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: AppColors.lightBlueBg,
+                                        child: Text(
+                                          'Q${question.id}',
+                                          style: const TextStyle(
+                                            color: AppColors.primaryNavy,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 14),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              question.questionText,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15,
+                                                color: AppColors.textPrimary,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 2),
+                                            Text(
+                                              '${question.topic} • ${question.answerBlocks.length} answer block(s)',
+                                              style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          IconButton(
+                                            icon: const Icon(Icons.remove_red_eye_outlined, size: 20, color: AppColors.accentBlue),
+                                            tooltip: 'Preview Student View',
+                                            onPressed: () => context.push('/admin/questions/preview/${question.id}'),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.edit_outlined, size: 20, color: AppColors.primaryNavy),
+                                            tooltip: 'Edit Question',
+                                            onPressed: () => context.push('/admin/questions/edit/${question.id}'),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.delete_outline_rounded, size: 20, color: AppColors.error),
+                                            tooltip: 'Delete Question',
+                                            onPressed: () async {
+                                              final confirmed = await ConfirmationDialog.show(
+                                                context,
+                                                title: 'Delete Question?',
+                                                content: 'Are you sure you want to delete question Q00${question.id}? This action cannot be undone.',
+                                              );
+                                              if (confirmed == true) {
+                                                final repo = ref.read(questionRepositoryProvider);
+                                                await repo.deleteQuestion(question.id);
+                                                ref.invalidate(adminQuestionsViewModelProvider);
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      );
+                    },
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (err, stack) => Text('Error: $err'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

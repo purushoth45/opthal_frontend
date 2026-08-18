@@ -23,7 +23,7 @@ class AppTheme {
         centerTitle: false,
         scrolledUnderElevation: 0,
       ),
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         color: Colors.white,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -78,6 +78,15 @@ class AppTheme {
           borderSide: const BorderSide(color: AppColors.error),
         ),
       ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.primaryNavy,
+        contentTextStyle: const TextStyle(color: Colors.white, fontSize: 14),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+        elevation: 6,
+      ),
     );
   }
 
@@ -105,7 +114,7 @@ class AppTheme {
         centerTitle: false,
         scrolledUnderElevation: 0,
       ),
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         color: darkSurface,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -159,6 +168,15 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.error),
         ),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: const Color(0xFF1E293B),
+        contentTextStyle: const TextStyle(color: Colors.white, fontSize: 14),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+        elevation: 6,
       ),
     );
   }

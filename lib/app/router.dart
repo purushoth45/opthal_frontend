@@ -15,19 +15,42 @@ import 'package:ophthal_vivaedge/views/profile/profile_view.dart';
 import 'package:ophthal_vivaedge/views/settings/settings_view.dart';
 import 'package:ophthal_vivaedge/views/splash/splash_view.dart';
 
+class RouterNotifier extends ChangeNotifier {
+  final Ref _ref;
+  RouterNotifier(this._ref) {
+    _ref.listen<AuthState>(authViewModelProvider, (previous, next) {
+      if (previous?.isAuthenticated != next.isAuthenticated) {
+        notifyListeners();
+      }
+    });
+  }
+}
+
+final routerNotifierProvider = Provider<RouterNotifier>((ref) {
+  return RouterNotifier(ref);
+});
+
 final routerProvider = Provider<GoRouter>((ref) {
-  final authNotifier = ValueNotifier<AuthState>(ref.watch(authViewModelProvider));
-  ref.listen<AuthState>(authViewModelProvider, (_, next) => authNotifier.value = next);
+  final notifier = ref.read(routerNotifierProvider);
 
   return GoRouter(
     initialLocation: '/splash',
-    refreshListenable: authNotifier,
+    refreshListenable: notifier,
     redirect: (context, state) {
       final authState = ref.read(authViewModelProvider);
       final isAuth = authState.isAuthenticated;
       final location = state.matchedLocation;
 
-      // Allow Splash & Onboarding to render freely
+      // 1. Once launch splash has finished, NEVER allow returning to /splash
+      if (SplashView.hasCompletedLaunch && location == '/splash') {
+        if (isAuth) {
+          final user = authState.user;
+          return (user != null && user.isAdmin) ? '/admin/dashboard' : '/student/dashboard';
+        }
+        return '/auth/login';
+      }
+
+      // 2. Allow Splash & Onboarding during launch
       if (location == '/splash' || location == '/onboarding') {
         return null;
       }

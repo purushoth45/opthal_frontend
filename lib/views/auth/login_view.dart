@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ophthal_vivaedge/core/constants/app_colors.dart';
 import 'package:ophthal_vivaedge/shared/widgets/app_button.dart';
+import 'package:ophthal_vivaedge/shared/widgets/app_error_banner.dart';
 import 'package:ophthal_vivaedge/shared/widgets/app_text_field.dart';
 import 'package:ophthal_vivaedge/viewmodels/auth_viewmodel.dart';
 
@@ -252,27 +253,7 @@ class _LoginViewState extends ConsumerState<LoginView> with SingleTickerProvider
                                   const SizedBox(height: 24),
 
                                   if (authState.errorMessage != null) ...[
-                                    AnimatedContainer(
-                                      duration: const Duration(milliseconds: 300),
-                                      padding: const EdgeInsets.all(12),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.errorBg,
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(color: AppColors.error.withOpacity(0.3)),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          const Icon(Icons.error_outline_rounded, size: 18, color: AppColors.error),
-                                          const SizedBox(width: 8),
-                                          Expanded(
-                                            child: Text(
-                                              authState.errorMessage!,
-                                              style: const TextStyle(color: AppColors.error, fontSize: 13),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                    AppErrorBanner(message: authState.errorMessage!),
                                     const SizedBox(height: 16),
                                   ],
 
@@ -285,6 +266,10 @@ class _LoginViewState extends ConsumerState<LoginView> with SingleTickerProvider
                                     validator: (val) {
                                       if (val == null || val.trim().isEmpty) {
                                         return 'Please enter your email address';
+                                      }
+                                      final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                                      if (!emailRegex.hasMatch(val.trim())) {
+                                        return 'Please enter a valid email address (e.g. name@domain.com)';
                                       }
                                       return null;
                                     },

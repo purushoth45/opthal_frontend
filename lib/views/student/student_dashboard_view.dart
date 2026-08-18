@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ophthal_vivaedge/core/constants/app_colors.dart';
+import 'package:ophthal_vivaedge/models/question_model.dart';
+import 'package:ophthal_vivaedge/viewmodels/admin_dashboard_viewmodel.dart';
 import 'package:ophthal_vivaedge/viewmodels/auth_viewmodel.dart';
 import 'package:ophthal_vivaedge/views/widgets/app_background_wrapper.dart';
 
@@ -26,8 +28,8 @@ class _StudentDashboardViewState extends ConsumerState<StudentDashboardView> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authViewModelProvider).user;
+    final questionsAsync = ref.watch(adminQuestionsViewModelProvider);
 
-    // 25% card fill opacity = 75% background gradient visibility
     final cardBg = Colors.white.withOpacity(0.25);
     final cardBorder = Colors.white.withOpacity(0.35);
 
@@ -43,7 +45,7 @@ class _StudentDashboardViewState extends ConsumerState<StudentDashboardView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 1. HERO HEADER BANNER WITH GLASS GLOW
+                    // 1. HERO HEADER BANNER WITH REALTIME DB STATS
                     ClipRRect(
                       borderRadius: BorderRadius.circular(24),
                       child: BackdropFilter(
@@ -120,57 +122,66 @@ class _StudentDashboardViewState extends ConsumerState<StudentDashboardView> {
                               ),
                               const SizedBox(height: 20),
 
-                              Container(
-                                padding: const EdgeInsets.all(14),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.18),
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(color: Colors.white.withOpacity(0.3)),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.3),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(Icons.auto_graph_rounded, color: Colors.white, size: 18),
+                              questionsAsync.when(
+                                data: (questions) {
+                                  final totalQ = questions.length;
+                                  final topicCount = questions.map((q) => q.topic).toSet().length;
+
+                                  return Container(
+                                    padding: const EdgeInsets.all(14),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.18),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(color: Colors.white.withOpacity(0.3)),
                                     ),
-                                    const SizedBox(width: 12),
-                                    const Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Cataract Viva Readiness',
-                                            style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withOpacity(0.3),
+                                            shape: BoxShape.circle,
                                           ),
-                                          SizedBox(height: 2),
-                                          Text(
-                                            '4 Clinical Modules Ready for Voice Practice',
-                                            style: TextStyle(color: Colors.white70, fontSize: 11.5),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: const Text(
-                                        '100% READY',
-                                        style: TextStyle(
-                                          color: AppColors.primaryNavy,
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.bold,
+                                          child: const Icon(Icons.auto_graph_rounded, color: Colors.white, size: 18),
                                         ),
-                                      ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Viva Readiness ($totalQ Questions)',
+                                                style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                '$topicCount Specialty Modules Active in Database',
+                                                style: const TextStyle(color: Colors.white70, fontSize: 11.5),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
+                                          child: Text(
+                                            totalQ > 0 ? '100% READY' : 'EMPTY',
+                                            style: const TextStyle(
+                                              color: AppColors.primaryNavy,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  );
+                                },
+                                loading: () => const SizedBox.shrink(),
+                                error: (e, s) => const SizedBox.shrink(),
                               ),
                             ],
                           ),
@@ -180,70 +191,87 @@ class _StudentDashboardViewState extends ConsumerState<StudentDashboardView> {
 
                     const SizedBox(height: 24),
 
-                    // 2. QUICK STATS CARDS GRID (70% GRADIENT VISIBILITY)
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildStatTile(
-                            context: context,
-                            icon: Icons.assignment_turned_in_rounded,
-                            title: 'Viva Questions',
-                            value: '4 Core',
-                            subtitle: 'Full answers & tables',
-                            color: Colors.white,
-                            cardBg: cardBg,
-                            cardBorder: cardBorder,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildStatTile(
-                            context: context,
-                            icon: Icons.mic_rounded,
-                            title: 'Speech Engine',
-                            value: 'Real-time',
-                            subtitle: 'STT Spoken transcript',
-                            color: Colors.white,
-                            cardBg: cardBg,
-                            cardBorder: cardBorder,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildStatTile(
-                            context: context,
-                            icon: Icons.record_voice_over_rounded,
-                            title: 'Audio Reader',
-                            value: 'TTS Voice',
-                            subtitle: 'Listen to prompt',
-                            color: Colors.white,
-                            cardBg: cardBg,
-                            cardBorder: cardBorder,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildStatTile(
-                            context: context,
-                            icon: Icons.analytics_outlined,
-                            title: 'Study Mode',
-                            value: 'Interactive',
-                            subtitle: 'Self-scoring feedback',
-                            color: Colors.white,
-                            cardBg: cardBg,
-                            cardBorder: cardBorder,
-                          ),
-                        ),
-                      ],
+                    // 2. REALTIME QUICK STATS CARDS GRID
+                    questionsAsync.when(
+                      data: (questions) {
+                        final totalQ = questions.length;
+                        final totalTopics = questions.map((q) => q.topic).toSet().length;
+                        final totalBlocks = questions.fold<int>(0, (sum, q) => sum + q.answerBlocks.length);
+
+                        return Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildStatTile(
+                                    context: context,
+                                    icon: Icons.assignment_turned_in_rounded,
+                                    title: 'Total Viva Questions',
+                                    value: '$totalQ Questions',
+                                    subtitle: 'From Database',
+                                    color: Colors.white,
+                                    cardBg: cardBg,
+                                    cardBorder: cardBorder,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: _buildStatTile(
+                                    context: context,
+                                    icon: Icons.grid_view_rounded,
+                                    title: 'Active Modules',
+                                    value: '$totalTopics Topics',
+                                    subtitle: 'Specialties loaded',
+                                    color: Colors.white,
+                                    cardBg: cardBg,
+                                    cardBorder: cardBorder,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildStatTile(
+                                    context: context,
+                                    icon: Icons.view_list_rounded,
+                                    title: 'Answer Blocks',
+                                    value: '$totalBlocks Blocks',
+                                    subtitle: 'Detailed tables & notes',
+                                    color: Colors.white,
+                                    cardBg: cardBg,
+                                    cardBorder: cardBorder,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: _buildStatTile(
+                                    context: context,
+                                    icon: Icons.mic_rounded,
+                                    title: 'Speech Engine',
+                                    value: 'STT & TTS',
+                                    subtitle: 'Voice Practice Ready',
+                                    color: Colors.white,
+                                    cardBg: cardBg,
+                                    cardBorder: cardBorder,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                      loading: () => const SizedBox(
+                        height: 100,
+                        child: Center(child: CircularProgressIndicator(color: Colors.white)),
+                      ),
+                      error: (e, s) => const SizedBox.shrink(),
                     ),
 
                     const SizedBox(height: 28),
 
-                    // 3. FEATURED HERO CLINICAL VIVA CARD
+                    // 3. FEATURED HERO CLINICAL VIVA CARD (REALTIME DB)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -263,112 +291,128 @@ class _StudentDashboardViewState extends ConsumerState<StudentDashboardView> {
                     ),
                     const SizedBox(height: 10),
 
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(22),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: cardBg,
-                            borderRadius: BorderRadius.circular(22),
-                            border: Border.all(color: cardBorder, width: 1.2),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.12),
-                                blurRadius: 16,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.25),
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                    child: const Icon(
-                                      Icons.remove_red_eye_rounded,
-                                      color: Colors.white,
-                                      size: 28,
-                                    ),
+                    questionsAsync.when(
+                      data: (questions) {
+                        if (questions.isEmpty) {
+                          return _buildEmptyCard(cardBg, cardBorder);
+                        }
+
+                        final featuredQ = questions.first;
+
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(22),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: cardBg,
+                                borderRadius: BorderRadius.circular(22),
+                                border: Border.all(color: cardBorder, width: 1.2),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.12),
+                                    blurRadius: 16,
+                                    offset: const Offset(0, 4),
                                   ),
-                                  const SizedBox(width: 14),
-                                  const Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Cataract & Clinical Ophthalmology',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 17,
-                                            color: Colors.white,
-                                          ),
+                                ],
+                              ),
+                              padding: const EdgeInsets.all(20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.25),
+                                          borderRadius: BorderRadius.circular(14),
                                         ),
-                                        SizedBox(height: 2),
-                                        Text(
-                                          '4 Essential MBBS Viva Voce Tasks',
-                                          style: TextStyle(
-                                            color: Colors.white70,
-                                            fontSize: 13,
-                                          ),
+                                        child: const Icon(
+                                          Icons.remove_red_eye_rounded,
+                                          color: Colors.white,
+                                          size: 28,
                                         ),
-                                      ],
+                                      ),
+                                      const SizedBox(width: 14),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              featuredQ.topic,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 17,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 2),
+                                            Text(
+                                              featuredQ.questionText,
+                                              style: const TextStyle(
+                                                color: Colors.white70,
+                                                fontSize: 13,
+                                              ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: [
+                                      _buildTag(featuredQ.topic),
+                                      _buildTag('${featuredQ.answerBlocks.length} Answer Blocks'),
+                                      _buildTag('Voice Viva'),
+                                    ],
+                                  ),
+
+                                  const SizedBox(height: 20),
+
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: ElevatedButton.icon(
+                                      onPressed: () => context.push('/student/viva'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        foregroundColor: AppColors.primaryNavy,
+                                        padding: const EdgeInsets.symmetric(vertical: 14),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(14),
+                                        ),
+                                      ),
+                                      icon: const Icon(Icons.play_circle_fill_rounded, size: 22, color: AppColors.primaryNavy),
+                                      label: const Text(
+                                        'LAUNCH VIVA VOCE SESSION',
+                                        style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5, color: AppColors.primaryNavy),
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 16),
-
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: [
-                                  _buildTag('Painless Loss of Vision'),
-                                  _buildTag('Acute Painful Loss'),
-                                  _buildTag('Diplopia Table'),
-                                  _buildTag('Fincham\'s Test'),
-                                ],
-                              ),
-
-                              const SizedBox(height: 20),
-
-                              SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton.icon(
-                                  onPressed: () => context.push('/student/viva'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
-                                    foregroundColor: AppColors.primaryNavy,
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                  ),
-                                  icon: const Icon(Icons.play_circle_fill_rounded, size: 22, color: AppColors.primaryNavy),
-                                  label: const Text(
-                                    'LAUNCH VIVA VOCE SESSION',
-                                    style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5, color: AppColors.primaryNavy),
-                                  ),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
+                        );
+                      },
+                      loading: () => const SizedBox(
+                        height: 140,
+                        child: Center(child: CircularProgressIndicator(color: Colors.white)),
                       ),
+                      error: (e, s) => _buildEmptyCard(cardBg, cardBorder),
                     ),
 
                     const SizedBox(height: 28),
 
-                    // 4. OPHTHALMOLOGY SPECIALTY TOPICS SELECTOR
+                    // 4. DYNAMIC OPHTHALMOLOGY SPECIALTY TOPICS & QUESTION LIST
                     const Text(
-                      'Viva Voce Specialties',
+                      'Viva Voce Specialty Modules',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -377,50 +421,49 @@ class _StudentDashboardViewState extends ConsumerState<StudentDashboardView> {
                     ),
                     const SizedBox(height: 12),
 
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          _buildCategoryChip('All Topics'),
-                          _buildCategoryChip('Cornea & Lens'),
-                          _buildCategoryChip('Glaucoma & Uvea'),
-                          _buildCategoryChip('Neuro-Ophthal'),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
+                    questionsAsync.when(
+                      data: (questions) {
+                        if (questions.isEmpty) {
+                          return const SizedBox.shrink();
+                        }
 
-                    _buildSpecialtyCard(
-                      title: 'Causes of Gradual Painless Loss of Vision',
-                      subtitle: 'Cataract, POAG, Diabetic Retinopathy & AMD',
-                      topic: 'Cornea & Lens',
-                      questionCount: 'Question 01',
-                      cardBg: cardBg,
-                      cardBorder: cardBorder,
-                      onTap: () => context.push('/student/viva'),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildSpecialtyCard(
-                      title: 'Causes of Acute Painful Loss of Vision',
-                      subtitle: 'Angle-Closure Glaucoma, Uveitis, Keratitis & Neuritis',
-                      topic: 'Glaucoma & Uvea',
-                      questionCount: 'Question 02',
-                      cardBg: cardBg,
-                      cardBorder: cardBorder,
-                      onTap: () => context.push('/student/viva'),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildSpecialtyCard(
-                      title: 'Monocular vs Binocular Diplopia Comparison',
-                      subtitle: 'Includes full clinical diagnostic table',
-                      topic: 'Neuro-Ophthal',
-                      questionCount: 'Question 03',
-                      cardBg: cardBg,
-                      cardBorder: cardBorder,
-                      onTap: () => context.push('/student/viva'),
+                        // Extract dynamic categories from DB questions
+                        final dynamicTopics = ['All Topics', ...questions.map((q) => q.topic).toSet()];
+
+                        final filteredQuestions = _selectedCategory == 'All Topics'
+                            ? questions
+                            : questions.where((q) => q.topic == _selectedCategory).toList();
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: dynamicTopics.map((topic) => _buildCategoryChip(topic)).toList(),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            ...filteredQuestions.map((q) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 12.0),
+                                child: _buildSpecialtyCard(
+                                  question: q,
+                                  cardBg: cardBg,
+                                  cardBorder: cardBorder,
+                                  onTap: () => context.push('/student/viva'),
+                                ),
+                              );
+                            }),
+                          ],
+                        );
+                      },
+                      loading: () => const SizedBox.shrink(),
+                      error: (e, s) => const SizedBox.shrink(),
                     ),
 
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 20),
 
                     // 5. DAILY VIVA CLINICAL PEARL CARD
                     ClipRRect(
@@ -495,6 +538,23 @@ class _StudentDashboardViewState extends ConsumerState<StudentDashboardView> {
     );
   }
 
+  Widget _buildEmptyCard(Color cardBg, Color cardBorder) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: cardBorder),
+      ),
+      child: const Center(
+        child: Text(
+          'No viva questions loaded in database yet.',
+          style: TextStyle(color: Colors.white70, fontSize: 14),
+        ),
+      ),
+    );
+  }
+
   Widget _buildStatTile({
     required BuildContext context,
     required IconData icon,
@@ -531,7 +591,7 @@ class _StudentDashboardViewState extends ConsumerState<StudentDashboardView> {
               Text(
                 value,
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: 17,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -540,7 +600,7 @@ class _StudentDashboardViewState extends ConsumerState<StudentDashboardView> {
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 12.5,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
                 ),
@@ -548,7 +608,7 @@ class _StudentDashboardViewState extends ConsumerState<StudentDashboardView> {
               Text(
                 subtitle,
                 style: const TextStyle(
-                  fontSize: 11,
+                  fontSize: 10.5,
                   color: Colors.white70,
                 ),
               ),
@@ -609,10 +669,7 @@ class _StudentDashboardViewState extends ConsumerState<StudentDashboardView> {
   }
 
   Widget _buildSpecialtyCard({
-    required String title,
-    required String subtitle,
-    required String topic,
-    required String questionCount,
+    required QuestionModel question,
     required Color cardBg,
     required Color cardBorder,
     required VoidCallback onTap,
@@ -638,7 +695,7 @@ class _StudentDashboardViewState extends ConsumerState<StudentDashboardView> {
               child: const Icon(Icons.menu_book_rounded, color: Colors.white, size: 20),
             ),
             title: Text(
-              title,
+              question.questionText,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 14.5,
@@ -648,7 +705,7 @@ class _StudentDashboardViewState extends ConsumerState<StudentDashboardView> {
             subtitle: Padding(
               padding: const EdgeInsets.only(top: 4.0),
               child: Text(
-                '$topic • $subtitle',
+                '${question.topic} • ${question.answerBlocks.length} Answer Block(s)',
                 style: const TextStyle(
                   fontSize: 12,
                   color: Colors.white70,
