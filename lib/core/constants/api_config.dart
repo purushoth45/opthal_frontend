@@ -6,7 +6,10 @@ class ApiConfig {
 
   // Centralized Base URL (Configurable for emulator, simulator, physical device)
   // Android Emulator: http://10.0.2.2:8080
-  // iOS Simulator / Web / Desktop: http://localhost:8080
+  // iOS Simulator / Web / Desktop: http://localhost:8080 
+  
+  //172.25.48.52:8080
+  
   static String get baseUrl {
     if (kIsWeb) {
       return 'http://localhost:8080/api';
