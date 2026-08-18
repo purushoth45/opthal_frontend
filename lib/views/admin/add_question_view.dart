@@ -143,22 +143,37 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final scaffoldBg = isDark ? const Color(0xFF0F172A) : AppColors.background;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final borderCol = isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1);
+    final primaryText = isDark ? Colors.white : AppColors.primaryNavy;
+    final secondaryText = isDark ? Colors.white70 : AppColors.textSecondary;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: scaffoldBg,
       appBar: AppBar(
-        title: const Text('Add Viva Question'),
+        title: const Text(
+          'Add Viva Question',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        backgroundColor: isDark ? const Color(0xFF1E293B) : AppColors.primaryNavy,
+        foregroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
           onPressed: () => context.pop(),
         ),
         bottom: TabBar(
           controller: _tabController,
-          labelColor: AppColors.primaryNavy,
-          unselectedLabelColor: AppColors.textSecondary,
-          indicatorColor: AppColors.primaryNavy,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          indicatorColor: Colors.white,
+          indicatorWeight: 3.0,
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13),
           tabs: const [
-            Tab(icon: Icon(Icons.edit_note_rounded), text: 'EDIT & BUILD'),
-            Tab(icon: Icon(Icons.preview_rounded), text: 'STUDENT PREVIEW'),
+            Tab(icon: Icon(Icons.edit_note_rounded, color: Colors.white), text: 'EDIT & BUILD'),
+            Tab(icon: Icon(Icons.preview_rounded, color: Colors.white70), text: 'STUDENT PREVIEW'),
           ],
         ),
       ),
@@ -177,14 +192,19 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Card(
+                          color: cardBg,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            side: BorderSide(color: borderCol, width: 1),
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.all(20.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Question Details',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryText),
                                 ),
                                 const SizedBox(height: 16),
                                 AppTextField(
@@ -209,14 +229,14 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
                         ),
                         const SizedBox(height: 20),
 
-                        const Text(
+                        Text(
                           'Structured Answer Content Blocks',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primaryNavy),
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryText),
                         ),
                         const SizedBox(height: 6),
-                        const Text(
+                        Text(
                           'Construct dynamic text, section headings, and medical comparison tables.',
-                          style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                          style: TextStyle(fontSize: 13, color: secondaryText),
                         ),
                         const SizedBox(height: 16),
 
@@ -287,7 +307,6 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
                           ],
                         ),
 
-
                         const SizedBox(height: 32),
 
                         AppButton(
@@ -314,7 +333,7 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppColors.accentBlue.withOpacity(0.1),
+                          color: AppColors.accentBlue.withOpacity(0.15),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Row(
@@ -333,6 +352,11 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
                       const SizedBox(height: 16),
 
                       Card(
+                        color: cardBg,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          side: BorderSide(color: borderCol, width: 1),
+                        ),
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
                           child: Column(
@@ -342,13 +366,13 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
                                 _questionController.text.isEmpty
                                     ? 'Question prompt will appear here...'
                                     : _questionController.text,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.primaryNavy,
+                                  color: primaryText,
                                 ),
                               ),
-                              const Divider(height: 24),
+                              Divider(height: 24, color: borderCol),
                               const Text(
                                 'CORRECT ANSWER',
                                 style: TextStyle(

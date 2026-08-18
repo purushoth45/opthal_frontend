@@ -21,13 +21,24 @@ class _QuestionListViewState extends ConsumerState<QuestionListView> {
   @override
   Widget build(BuildContext context) {
     final questionsAsync = ref.watch(adminQuestionsViewModelProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final scaffoldBg = isDark ? const Color(0xFF0F172A) : AppColors.background;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final borderCol = isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1);
+    final primaryText = isDark ? Colors.white : AppColors.primaryNavy;
+    final secondaryText = isDark ? Colors.white70 : AppColors.textSecondary;
+    final badgeBg = isDark ? const Color(0xFF334155) : AppColors.lightBlueBg;
+    final badgeText = isDark ? const Color(0xFF38BDF8) : AppColors.primaryNavy;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: scaffoldBg,
       appBar: AppBar(
         title: const Text('Question Management'),
+        backgroundColor: isDark ? const Color(0xFF1E293B) : AppColors.primaryNavy,
+        foregroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
           onPressed: () => context.pop(),
         ),
       ),
@@ -45,48 +56,63 @@ class _QuestionListViewState extends ConsumerState<QuestionListView> {
                     builder: (context, constraints) {
                       final isNarrow = constraints.maxWidth < 640;
 
+                      final searchField = TextField(
+                        style: TextStyle(color: primaryText, fontSize: 14),
+                        decoration: InputDecoration(
+                          hintText: 'Search questions...',
+                          hintStyle: TextStyle(color: isDark ? Colors.white54 : AppColors.textMuted),
+                          prefixIcon: Icon(Icons.search_rounded, color: secondaryText),
+                          filled: true,
+                          fillColor: cardBg,
+                          isDense: true,
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: borderCol),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(color: AppColors.accentBlue, width: 2),
+                          ),
+                        ),
+                        onChanged: (val) {
+                          setState(() => _searchQuery = val);
+                        },
+                      );
+
+                      final dropdown = Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: cardBg,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: borderCol),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: _selectedTopic,
+                            dropdownColor: cardBg,
+                            style: TextStyle(color: primaryText, fontSize: 13, fontWeight: FontWeight.w600),
+                            items: const [
+                              DropdownMenuItem(value: 'All Topics', child: Text('All Topics')),
+                              DropdownMenuItem(value: 'Cornea & Lens', child: Text('Cornea & Lens')),
+                              DropdownMenuItem(value: 'Glaucoma & Uvea', child: Text('Glaucoma & Uvea')),
+                              DropdownMenuItem(value: 'Strabismus', child: Text('Strabismus')),
+                            ],
+                            onChanged: (val) {
+                              if (val != null) setState(() => _selectedTopic = val);
+                            },
+                          ),
+                        ),
+                      );
+
                       if (isNarrow) {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            TextField(
-                              decoration: const InputDecoration(
-                                hintText: 'Search questions...',
-                                prefixIcon: Icon(Icons.search_rounded),
-                                isDense: true,
-                              ),
-                              onChanged: (val) {
-                                setState(() => _searchQuery = val);
-                              },
-                            ),
+                            searchField,
                             const SizedBox(height: 12),
                             Row(
                               children: [
-                                Expanded(
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(color: AppColors.border),
-                                    ),
-                                    child: DropdownButtonHideUnderline(
-                                      child: DropdownButton<String>(
-                                        value: _selectedTopic,
-                                        isExpanded: true,
-                                        items: const [
-                                          DropdownMenuItem(value: 'All Topics', child: Text('All Topics')),
-                                          DropdownMenuItem(value: 'Cornea & Lens', child: Text('Cornea & Lens')),
-                                          DropdownMenuItem(value: 'Glaucoma & Uvea', child: Text('Glaucoma & Uvea')),
-                                          DropdownMenuItem(value: 'Strabismus', child: Text('Strabismus')),
-                                        ],
-                                        onChanged: (val) {
-                                          if (val != null) setState(() => _selectedTopic = val);
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                                Expanded(child: dropdown),
                                 const SizedBox(width: 10),
                                 ElevatedButton.icon(
                                   onPressed: () => context.push('/admin/questions/add'),
@@ -106,41 +132,9 @@ class _QuestionListViewState extends ConsumerState<QuestionListView> {
 
                       return Row(
                         children: [
-                          Expanded(
-                            child: TextField(
-                              decoration: const InputDecoration(
-                                hintText: 'Search questions...',
-                                prefixIcon: Icon(Icons.search_rounded),
-                                isDense: true,
-                              ),
-                              onChanged: (val) {
-                                setState(() => _searchQuery = val);
-                              },
-                            ),
-                          ),
+                          Expanded(child: searchField),
                           const SizedBox(width: 12),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: AppColors.border),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: _selectedTopic,
-                                items: const [
-                                  DropdownMenuItem(value: 'All Topics', child: Text('All Topics')),
-                                  DropdownMenuItem(value: 'Cornea & Lens', child: Text('Cornea & Lens')),
-                                  DropdownMenuItem(value: 'Glaucoma & Uvea', child: Text('Glaucoma & Uvea')),
-                                  DropdownMenuItem(value: 'Strabismus', child: Text('Strabismus')),
-                                ],
-                                onChanged: (val) {
-                                  if (val != null) setState(() => _selectedTopic = val);
-                                },
-                              ),
-                            ),
-                          ),
+                          dropdown,
                           const SizedBox(width: 12),
                           ElevatedButton.icon(
                             onPressed: () => context.push('/admin/questions/add'),
@@ -181,6 +175,11 @@ class _QuestionListViewState extends ConsumerState<QuestionListView> {
                         itemBuilder: (context, index) {
                           final question = filtered[index];
                           return Card(
+                            color: cardBg,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              side: BorderSide(color: borderCol, width: 1),
+                            ),
                             margin: const EdgeInsets.only(bottom: 12),
                             child: Padding(
                               padding: const EdgeInsets.all(14.0),
@@ -197,14 +196,14 @@ class _QuestionListViewState extends ConsumerState<QuestionListView> {
                                             Container(
                                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                               decoration: BoxDecoration(
-                                                color: AppColors.lightBlueBg,
+                                                color: badgeBg,
                                                 borderRadius: BorderRadius.circular(6),
                                               ),
                                               child: Text(
                                                 'Q${question.id.toString().padLeft(3, '0')}',
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                   fontWeight: FontWeight.bold,
-                                                  color: AppColors.primaryNavy,
+                                                  color: badgeText,
                                                   fontSize: 12,
                                                 ),
                                               ),
@@ -213,10 +212,10 @@ class _QuestionListViewState extends ConsumerState<QuestionListView> {
                                             Expanded(
                                               child: Text(
                                                 question.questionText,
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 14,
-                                                  color: AppColors.textPrimary,
+                                                  color: primaryText,
                                                 ),
                                               ),
                                             ),
@@ -225,12 +224,12 @@ class _QuestionListViewState extends ConsumerState<QuestionListView> {
                                         const SizedBox(height: 8),
                                         Text(
                                           'Topic: ${question.topic} • ${question.answerBlocks.length} Block(s)',
-                                          style: const TextStyle(
-                                            color: AppColors.textSecondary,
+                                          style: TextStyle(
+                                            color: secondaryText,
                                             fontSize: 12.5,
                                           ),
                                         ),
-                                        const Divider(height: 16),
+                                        Divider(height: 16, color: borderCol),
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.end,
                                           children: [
@@ -240,7 +239,7 @@ class _QuestionListViewState extends ConsumerState<QuestionListView> {
                                               onPressed: () => context.push('/admin/questions/preview/${question.id}'),
                                             ),
                                             IconButton(
-                                              icon: const Icon(Icons.edit_outlined, color: AppColors.primaryNavy, size: 20),
+                                              icon: Icon(Icons.edit_outlined, color: primaryText, size: 20),
                                               tooltip: 'Edit',
                                               onPressed: () => context.push('/admin/questions/edit/${question.id}'),
                                             ),
@@ -271,14 +270,14 @@ class _QuestionListViewState extends ConsumerState<QuestionListView> {
                                       Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                         decoration: BoxDecoration(
-                                          color: AppColors.lightBlueBg,
+                                          color: badgeBg,
                                           borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: Text(
                                           'Q${question.id.toString().padLeft(3, '0')}',
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            color: AppColors.primaryNavy,
+                                            color: badgeText,
                                             fontSize: 13,
                                           ),
                                         ),
@@ -290,17 +289,17 @@ class _QuestionListViewState extends ConsumerState<QuestionListView> {
                                           children: [
                                             Text(
                                               question.questionText,
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 15,
-                                                color: AppColors.textPrimary,
+                                                color: primaryText,
                                               ),
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
                                               'Topic: ${question.topic} • ${question.answerBlocks.length} Block(s)',
-                                              style: const TextStyle(
-                                                color: AppColors.textSecondary,
+                                              style: TextStyle(
+                                                color: secondaryText,
                                                 fontSize: 13,
                                               ),
                                             ),
@@ -315,7 +314,7 @@ class _QuestionListViewState extends ConsumerState<QuestionListView> {
                                             onPressed: () => context.push('/admin/questions/preview/${question.id}'),
                                           ),
                                           IconButton(
-                                            icon: const Icon(Icons.edit_outlined, color: AppColors.primaryNavy),
+                                            icon: Icon(Icons.edit_outlined, color: primaryText),
                                             tooltip: 'Edit',
                                             onPressed: () => context.push('/admin/questions/edit/${question.id}'),
                                           ),
@@ -347,7 +346,7 @@ class _QuestionListViewState extends ConsumerState<QuestionListView> {
                       );
                     },
                     loading: () => const Center(child: CircularProgressIndicator()),
-                    error: (e, s) => Text('Error: $e'),
+                    error: (e, s) => Text('Error: $e', style: TextStyle(color: primaryText)),
                   ),
                 ],
               ),

@@ -51,7 +51,6 @@ class _ImageBlockEditorState extends State<ImageBlockEditor> {
         return;
       }
 
-      // Check file size (15MB limit)
       if (length > 15 * 1024 * 1024) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -79,12 +78,22 @@ class _ImageBlockEditorState extends State<ImageBlockEditor> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final borderCol = isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1);
+    final textCol = isDark ? Colors.white : AppColors.primaryNavy;
+    final labelCol = isDark ? Colors.white70 : AppColors.textSecondary;
+
     final hasImage = widget.block.imageBytes != null ||
         (widget.block.content != null && widget.block.content!.trim().isNotEmpty);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      color: Colors.white,
+      color: cardBg,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: borderCol, width: 1),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -95,7 +104,7 @@ class _ImageBlockEditorState extends State<ImageBlockEditor> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.purple.shade50,
+                    color: isDark ? const Color(0xFF4C1D95) : Colors.purple.shade50,
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
@@ -103,7 +112,7 @@ class _ImageBlockEditorState extends State<ImageBlockEditor> {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: Colors.purple.shade800,
+                      color: isDark ? const Color(0xFFC084FC) : Colors.purple.shade800,
                     ),
                   ),
                 ),
@@ -113,19 +122,19 @@ class _ImageBlockEditorState extends State<ImageBlockEditor> {
                     child: Text(
                       widget.block.localFileName!,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      style: TextStyle(fontSize: 12, color: labelCol),
                     ),
                   ),
                 const Spacer(),
                 if (widget.onMoveUp != null)
                   IconButton(
-                    icon: const Icon(Icons.arrow_upward_rounded, size: 18),
+                    icon: Icon(Icons.arrow_upward_rounded, size: 18, color: textCol),
                     onPressed: widget.onMoveUp,
                     tooltip: 'Move Up',
                   ),
                 if (widget.onMoveDown != null)
                   IconButton(
-                    icon: const Icon(Icons.arrow_downward_rounded, size: 18),
+                    icon: Icon(Icons.arrow_downward_rounded, size: 18, color: textCol),
                     onPressed: widget.onMoveDown,
                     tooltip: 'Move Down',
                   ),
@@ -150,17 +159,17 @@ class _ImageBlockEditorState extends State<ImageBlockEditor> {
                   : const Icon(Icons.add_photo_alternate_rounded, size: 18),
               label: Text(hasImage ? 'Change Image' : 'Select Image (JPG, PNG, WEBP)'),
               style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.primaryNavy,
+                foregroundColor: isDark ? const Color(0xFF38BDF8) : AppColors.primaryNavy,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                side: const BorderSide(color: AppColors.primaryNavy),
+                side: BorderSide(color: isDark ? const Color(0xFF38BDF8) : AppColors.primaryNavy),
               ),
             ),
 
             if (hasImage) ...[
               const SizedBox(height: 14),
-              const Text(
+              Text(
                 'Image Preview:',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: labelCol),
               ),
               const SizedBox(height: 6),
               ImageBlockWidget(block: widget.block),

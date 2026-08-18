@@ -14,9 +14,18 @@ class AdminDashboardView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final questionsAsync = ref.watch(adminQuestionsViewModelProvider);
     final user = ref.watch(authViewModelProvider).user;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final scaffoldBg = isDark ? const Color(0xFF0F172A) : AppColors.background;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final borderCol = isDark ? const Color(0xFF334155) : AppColors.border;
+    final primaryText = isDark ? Colors.white : AppColors.primaryNavy;
+    final secondaryText = isDark ? Colors.white70 : AppColors.textSecondary;
+    final badgeBg = isDark ? const Color(0xFF334155) : AppColors.lightBlueBg;
+    final badgeText = isDark ? const Color(0xFF38BDF8) : AppColors.primaryNavy;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: scaffoldBg,
       appBar: AppBar(
         backgroundColor: AppColors.primaryNavy,
         foregroundColor: Colors.white,
@@ -98,14 +107,14 @@ class AdminDashboardView extends ConsumerWidget {
                             Text(
                               'Welcome, Admin',
                               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                    color: AppColors.primaryNavy,
+                                    color: primaryText,
                                     fontWeight: FontWeight.bold,
                                   ),
                             ),
                             const SizedBox(height: 4),
-                            const Text(
+                            Text(
                               'Manage your interactive ophthalmology viva question bank',
-                              style: TextStyle(color: AppColors.textSecondary, fontSize: 13.5),
+                              style: TextStyle(color: secondaryText, fontSize: 13.5),
                             ),
                             const SizedBox(height: 14),
                             SizedBox(
@@ -139,14 +148,14 @@ class AdminDashboardView extends ConsumerWidget {
                                 Text(
                                   'Welcome, Admin',
                                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                        color: AppColors.primaryNavy,
+                                        color: primaryText,
                                         fontWeight: FontWeight.bold,
                                       ),
                                 ),
                                 const SizedBox(height: 4),
-                                const Text(
+                                Text(
                                   'Manage your interactive ophthalmology viva question bank',
-                                  style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                                  style: TextStyle(color: secondaryText, fontSize: 14),
                                 ),
                               ],
                             ),
@@ -177,9 +186,9 @@ class AdminDashboardView extends ConsumerWidget {
                       final totalCard = Container(
                         padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: cardBg,
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: AppColors.border),
+                          border: Border.all(color: borderCol),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.02),
@@ -191,21 +200,21 @@ class AdminDashboardView extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'Total Questions',
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.textSecondary,
+                                color: secondaryText,
                               ),
                             ),
                             const SizedBox(height: 8),
                             Text(
                               '${questions.length}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.primaryNavy,
+                                color: primaryText,
                               ),
                             ),
                           ],
@@ -215,9 +224,9 @@ class AdminDashboardView extends ConsumerWidget {
                       final activeModulesCard = Container(
                         padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: cardBg,
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: AppColors.border),
+                          border: Border.all(color: borderCol),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.02),
@@ -229,12 +238,12 @@ class AdminDashboardView extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'Active Modules',
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.textSecondary,
+                                color: secondaryText,
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -284,12 +293,12 @@ class AdminDashboardView extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Recent Question Bank',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.primaryNavy,
+                          color: primaryText,
                         ),
                       ),
                       TextButton(
@@ -313,14 +322,14 @@ class AdminDashboardView extends ConsumerWidget {
                         return Container(
                           padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: cardBg,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.border),
+                            border: Border.all(color: borderCol),
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Text(
                               'No questions created yet. Click "+ Add Question" to get started.',
-                              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                              style: TextStyle(color: secondaryText, fontSize: 14),
                             ),
                           ),
                         );
@@ -329,6 +338,11 @@ class AdminDashboardView extends ConsumerWidget {
                       return Column(
                         children: questions.map((question) {
                           return Card(
+                            color: cardBg,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              side: BorderSide(color: borderCol, width: 1),
+                            ),
                             margin: const EdgeInsets.only(bottom: 12),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -344,11 +358,11 @@ class AdminDashboardView extends ConsumerWidget {
                                           children: [
                                             CircleAvatar(
                                               radius: 14,
-                                              backgroundColor: AppColors.lightBlueBg,
+                                              backgroundColor: badgeBg,
                                               child: Text(
                                                 'Q${question.id}',
-                                                style: const TextStyle(
-                                                  color: AppColors.primaryNavy,
+                                                style: TextStyle(
+                                                  color: badgeText,
                                                   fontSize: 11,
                                                   fontWeight: FontWeight.bold,
                                                 ),
@@ -358,10 +372,10 @@ class AdminDashboardView extends ConsumerWidget {
                                             Expanded(
                                               child: Text(
                                                 question.questionText,
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 14,
-                                                  color: AppColors.textPrimary,
+                                                  color: primaryText,
                                                 ),
                                               ),
                                             ),
@@ -370,9 +384,9 @@ class AdminDashboardView extends ConsumerWidget {
                                         const SizedBox(height: 8),
                                         Text(
                                           '${question.topic} • ${question.answerBlocks.length} block(s)',
-                                          style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                                          style: TextStyle(fontSize: 12, color: secondaryText),
                                         ),
-                                        const Divider(height: 16),
+                                        Divider(height: 16, color: borderCol),
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.end,
                                           children: [
@@ -382,7 +396,7 @@ class AdminDashboardView extends ConsumerWidget {
                                               onPressed: () => context.push('/admin/questions/preview/${question.id}'),
                                             ),
                                             IconButton(
-                                              icon: const Icon(Icons.edit_outlined, size: 20, color: AppColors.primaryNavy),
+                                              icon: Icon(Icons.edit_outlined, size: 20, color: primaryText),
                                               tooltip: 'Edit',
                                               onPressed: () => context.push('/admin/questions/edit/${question.id}'),
                                             ),
@@ -411,11 +425,11 @@ class AdminDashboardView extends ConsumerWidget {
                                   return Row(
                                     children: [
                                       CircleAvatar(
-                                        backgroundColor: AppColors.lightBlueBg,
+                                        backgroundColor: badgeBg,
                                         child: Text(
                                           'Q${question.id}',
-                                          style: const TextStyle(
-                                            color: AppColors.primaryNavy,
+                                          style: TextStyle(
+                                            color: badgeText,
                                             fontSize: 12,
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -428,16 +442,16 @@ class AdminDashboardView extends ConsumerWidget {
                                           children: [
                                             Text(
                                               question.questionText,
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 15,
-                                                color: AppColors.textPrimary,
+                                                color: primaryText,
                                               ),
                                             ),
                                             const SizedBox(height: 2),
                                             Text(
                                               '${question.topic} • ${question.answerBlocks.length} answer block(s)',
-                                              style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                                              style: TextStyle(fontSize: 13, color: secondaryText),
                                             ),
                                           ],
                                         ),
@@ -451,7 +465,7 @@ class AdminDashboardView extends ConsumerWidget {
                                             onPressed: () => context.push('/admin/questions/preview/${question.id}'),
                                           ),
                                           IconButton(
-                                            icon: const Icon(Icons.edit_outlined, size: 20, color: AppColors.primaryNavy),
+                                            icon: Icon(Icons.edit_outlined, size: 20, color: primaryText),
                                             tooltip: 'Edit Question',
                                             onPressed: () => context.push('/admin/questions/edit/${question.id}'),
                                           ),
@@ -483,7 +497,7 @@ class AdminDashboardView extends ConsumerWidget {
                       );
                     },
                     loading: () => const Center(child: CircularProgressIndicator()),
-                    error: (err, stack) => Text('Error: $err'),
+                    error: (err, stack) => Text('Error: $err', style: TextStyle(color: primaryText)),
                   ),
                 ],
               ),

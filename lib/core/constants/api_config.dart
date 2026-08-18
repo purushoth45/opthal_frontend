@@ -9,10 +9,10 @@ class ApiConfig {
   // iOS Simulator / Web / Desktop: http://localhost:8080 
   
   //172.25.48.52:8080
-  
+
   static String get baseUrl {
     if (kIsWeb) {
-      return 'http://localhost:8080/api';
+      return 'http://172.25.48.52:8080/api';
     }
     try {
       if (Platform.isAndroid) {
