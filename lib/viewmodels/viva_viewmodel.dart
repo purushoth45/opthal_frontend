@@ -155,7 +155,10 @@ class VivaViewModel extends StateNotifier<VivaState> {
         onListeningStarted: () {},
         onListeningStopped: () {
           _stopTimer();
-          state = state.copyWith(voiceState: VivaVoiceState.answerReady);
+          state = state.copyWith(
+            voiceState: VivaVoiceState.answerReady,
+            showCorrectAnswer: true,
+          );
         },
         onError: (error) {
           // Log error
@@ -164,7 +167,10 @@ class VivaViewModel extends StateNotifier<VivaState> {
           if (status == 'done' || status == 'notListening') {
             if (state.voiceState == VivaVoiceState.listening && state.spokenTranscript.isNotEmpty) {
               _stopTimer();
-              state = state.copyWith(voiceState: VivaVoiceState.answerReady);
+              state = state.copyWith(
+                voiceState: VivaVoiceState.answerReady,
+                showCorrectAnswer: true,
+              );
             }
           }
         },
@@ -184,6 +190,7 @@ class VivaViewModel extends StateNotifier<VivaState> {
 
     state = state.copyWith(
       voiceState: VivaVoiceState.answerReady,
+      showCorrectAnswer: true,
     );
   }
 

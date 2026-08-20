@@ -56,46 +56,47 @@ class VivaView extends ConsumerWidget {
 
     final progress = (vivaState.currentIndex + 1) / vivaState.totalQuestions;
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
+    return AppBackgroundWrapper(
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.white),
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        title: const Text(
-          'Interactive Voice Viva',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: Colors.white),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.25),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.4),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
+          foregroundColor: Colors.white,
+          iconTheme: const IconThemeData(color: Colors.white),
+          title: const Text(
+            'Interactive Voice Viva',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: Colors.white),
+          ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.25),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.4),
+                    ),
                   ),
-                ),
-                child: Text(
-                  'Q${(vivaState.currentIndex + 1).toString().padLeft(2, '0')} / ${vivaState.totalQuestions.toString().padLeft(2, '0')}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 12.5,
+                  child: Text(
+                    'Q${(vivaState.currentIndex + 1).toString().padLeft(2, '0')} / ${vivaState.totalQuestions.toString().padLeft(2, '0')}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 12.5,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-      body: AppBackgroundWrapper(
-        child: SafeArea(
+          ],
+        ),
+        body: SafeArea(
           child: Column(
             children: [
               LinearProgressIndicator(
@@ -375,8 +376,12 @@ class VivaView extends ConsumerWidget {
                           ),
                           const SizedBox(height: 20),
 
-                          if (!vivaState.showCorrectAnswer) ...[
-                            Center(
+                          AnimatedCrossFade(
+                            duration: const Duration(milliseconds: 400),
+                            crossFadeState: vivaState.showCorrectAnswer
+                                ? CrossFadeState.showSecond
+                                : CrossFadeState.showFirst,
+                            firstChild: Center(
                               child: OutlinedButton.icon(
                                 onPressed: () => viewModel.toggleShowCorrectAnswer(),
                                 style: OutlinedButton.styleFrom(
@@ -398,10 +403,7 @@ class VivaView extends ConsumerWidget {
                                 ),
                               ),
                             ),
-                          ],
-
-                          if (vivaState.showCorrectAnswer) ...[
-                            ClipRRect(
+                            secondChild: ClipRRect(
                               borderRadius: BorderRadius.circular(22),
                               child: BackdropFilter(
                                 filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
@@ -460,7 +462,7 @@ class VivaView extends ConsumerWidget {
                                 ),
                               ),
                             ),
-                          ],
+                          ),
 
                           const SizedBox(height: 24),
 

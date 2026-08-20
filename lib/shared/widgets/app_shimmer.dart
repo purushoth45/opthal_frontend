@@ -12,14 +12,16 @@ class AppShimmer extends StatefulWidget {
 
 class _AppShimmerState extends State<AppShimmer> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1400),
+      duration: const Duration(milliseconds: 1500),
     )..repeat();
+    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
   }
 
   @override
@@ -32,11 +34,15 @@ class _AppShimmerState extends State<AppShimmer> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final baseColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0);
-    final highlightColor = isDark ? const Color(0xFF334155) : const Color(0xFFF8FAFC);
+    final baseColor = isDark
+        ? const Color(0xFF1E293B).withOpacity(0.6)
+        : const Color(0xFFE2E8F0).withOpacity(0.8);
+    final highlightColor = isDark
+        ? const Color(0xFF38BDF8).withOpacity(0.3)
+        : Colors.white.withOpacity(0.9);
 
     return AnimatedBuilder(
-      animation: _controller,
+      animation: _animation,
       builder: (context, child) {
         return ShaderMask(
           blendMode: BlendMode.srcATop,
@@ -46,7 +52,7 @@ class _AppShimmerState extends State<AppShimmer> with SingleTickerProviderStateM
               stops: const [0.0, 0.5, 1.0],
               begin: const Alignment(-1.0, -0.3),
               end: const Alignment(1.0, 0.3),
-              transform: _SlidingGradientTransform(slidePercent: _controller.value),
+              transform: _SlidingGradientTransform(slidePercent: _animation.value),
             ).createShader(bounds);
           },
           child: widget.child,
@@ -63,7 +69,7 @@ class _SlidingGradientTransform extends GradientTransform {
 
   @override
   Matrix4? transform(Rect bounds, {TextDirection? textDirection}) {
-    return Matrix4.translationValues(bounds.width * (slidePercent * 2 - 1), 0, 0);
+    return Matrix4.translationValues(bounds.width * (slidePercent * 2.4 - 1.2), 0, 0);
   }
 }
 
@@ -83,7 +89,12 @@ class ShimmerBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final color = isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1);
+    final color = isDark
+        ? const Color(0xFF334155).withOpacity(0.5)
+        : const Color(0xFFCBD5E1).withOpacity(0.6);
+    final borderColor = isDark
+        ? const Color(0xFF475569).withOpacity(0.4)
+        : Colors.white.withOpacity(0.5);
 
     return Container(
       width: width,
@@ -91,6 +102,7 @@ class ShimmerBox extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(borderRadius),
+        border: Border.all(color: borderColor, width: 1.0),
       ),
     );
   }

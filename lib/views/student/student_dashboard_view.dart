@@ -34,10 +34,10 @@ class _StudentDashboardViewState extends ConsumerState<StudentDashboardView> {
     final cardBg = Colors.white.withOpacity(0.25);
     final cardBorder = Colors.white.withOpacity(0.35);
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: AppBackgroundWrapper(
-        child: SafeArea(
+    return AppBackgroundWrapper(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
             child: Center(

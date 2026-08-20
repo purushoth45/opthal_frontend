@@ -28,17 +28,19 @@ class SettingsView extends ConsumerWidget {
       color: primaryTextColor,
     );
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
+    return AppBackgroundWrapper(
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        title: const Text('Settings', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-      ),
-      body: AppBackgroundWrapper(
-        child: SafeArea(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
+          foregroundColor: Colors.white,
+          iconTheme: const IconThemeData(color: Colors.white),
+          title: const Text('Settings', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        ),
+        body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(20.0),
             child: Center(
