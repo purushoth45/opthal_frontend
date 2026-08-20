@@ -31,7 +31,11 @@ class SettingsView extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('Settings'),
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: const Text('Settings', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
       body: AppBackgroundWrapper(
         child: SafeArea(
@@ -157,26 +161,30 @@ class SettingsView extends ConsumerWidget {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Text-To-Speech Speed',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                          color: primaryTextColor,
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'Text-To-Speech Speed',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                            color: primaryTextColor,
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        'Adjust audio reader playback rate for viva questions',
-                                        style: TextStyle(
-                                          color: secondaryTextColor,
-                                          fontSize: 12,
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          'Adjust audio reader playback rate for viva questions',
+                                          style: TextStyle(
+                                            color: secondaryTextColor,
+                                            fontSize: 12,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
+                                  const SizedBox(width: 10),
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                     decoration: BoxDecoration(
@@ -377,12 +385,16 @@ class SettingsView extends ConsumerWidget {
                 color: isSelected ? AppColors.primaryNavy : Colors.white70,
               ),
               const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                  color: isSelected ? AppColors.primaryNavy : Colors.white70,
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: isSelected ? AppColors.primaryNavy : Colors.white70,
+                  ),
                 ),
               ),
             ],

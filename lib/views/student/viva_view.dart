@@ -59,9 +59,14 @@ class VivaView extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
+        scrolledUnderElevation: 0,
         title: const Text(
           'Interactive Voice Viva',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: Colors.white),
         ),
         actions: [
           Padding(
@@ -313,18 +318,18 @@ class VivaView extends ConsumerWidget {
                                         borderRadius: BorderRadius.circular(14),
                                         border: Border.all(color: Colors.white.withOpacity(0.3)),
                                       ),
-                                      child: Text(
+                                      child: SelectableText(
                                         vivaState.spokenTranscript.isEmpty
                                             ? 'Tap "SPEAK NOW" and recite your viva answer clearly...'
-                                            : '"${vivaState.spokenTranscript}"',
+                                            : vivaState.spokenTranscript,
                                         style: TextStyle(
                                           color: vivaState.spokenTranscript.isEmpty
-                                              ? Colors.white60
-                                              : primaryTextColor,
+                                              ? Colors.white70
+                                              : Colors.white,
                                           fontStyle: vivaState.spokenTranscript.isEmpty
                                               ? FontStyle.italic
                                               : FontStyle.normal,
-                                          fontSize: 14.5,
+                                          fontSize: 15,
                                           height: 1.45,
                                         ),
                                       ),

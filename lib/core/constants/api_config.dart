@@ -16,7 +16,7 @@ class ApiConfig {
     }
     try {
       if (Platform.isAndroid) {
-        return 'http://10.0.2.2:8080/api';
+        return 'http://172.25.48.52:8080/api';
       }
     } catch (_) {}
     return 'http://localhost:8080/api';

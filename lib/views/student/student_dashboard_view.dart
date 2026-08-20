@@ -7,6 +7,7 @@ import 'package:ophthal_vivaedge/models/question_model.dart';
 import 'package:ophthal_vivaedge/viewmodels/admin_dashboard_viewmodel.dart';
 import 'package:ophthal_vivaedge/viewmodels/auth_viewmodel.dart';
 import 'package:ophthal_vivaedge/views/widgets/app_background_wrapper.dart';
+import 'package:ophthal_vivaedge/shared/widgets/app_shimmer.dart';
 
 class StudentDashboardView extends ConsumerStatefulWidget {
   const StudentDashboardView({super.key});
@@ -401,9 +402,8 @@ class _StudentDashboardViewState extends ConsumerState<StudentDashboardView> {
                           ),
                         );
                       },
-                      loading: () => const SizedBox(
-                        height: 140,
-                        child: Center(child: CircularProgressIndicator(color: Colors.white)),
+                      loading: () => const AppShimmer(
+                        child: ShimmerBox(width: double.infinity, height: 140, borderRadius: 22),
                       ),
                       error: (e, s) => _buildEmptyCard(cardBg, cardBorder),
                     ),
@@ -459,7 +459,17 @@ class _StudentDashboardViewState extends ConsumerState<StudentDashboardView> {
                           ],
                         );
                       },
-                      loading: () => const SizedBox.shrink(),
+                      loading: () => AppShimmer(
+                        child: Column(
+                          children: List.generate(
+                            3,
+                            (index) => const Padding(
+                              padding: EdgeInsets.only(bottom: 12.0),
+                              child: ShimmerBox(width: double.infinity, height: 80, borderRadius: 16),
+                            ),
+                          ),
+                        ),
+                      ),
                       error: (e, s) => const SizedBox.shrink(),
                     ),
 

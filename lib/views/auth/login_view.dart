@@ -85,9 +85,17 @@ class _LoginViewState extends ConsumerState<LoginView> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authViewModelProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final scaffoldBg = isDark ? const Color(0xFF0F172A) : AppColors.background;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final cardBorder = isDark ? const Color(0xFF334155) : AppColors.border.withOpacity(0.6);
+    final primaryTextColor = isDark ? Colors.white : AppColors.primaryNavy;
+    final secondaryTextColor = isDark ? Colors.white70 : AppColors.textSecondary;
+    final iconColor = isDark ? const Color(0xFF38BDF8) : AppColors.primaryNavy;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: scaffoldBg,
       body: Stack(
         children: [
           // Elegant Top Decorative Gradient Background Arc
@@ -208,22 +216,22 @@ class _LoginViewState extends ConsumerState<LoginView> with SingleTickerProvider
                           opacity: _fadeAnim,
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: cardBg,
                               borderRadius: BorderRadius.circular(24),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.06),
+                                  color: Colors.black.withOpacity(isDark ? 0.25 : 0.06),
                                   blurRadius: 24,
                                   offset: const Offset(0, 10),
                                 ),
                                 BoxShadow(
-                                  color: AppColors.primaryNavy.withOpacity(0.04),
+                                  color: AppColors.primaryNavy.withOpacity(isDark ? 0.1 : 0.04),
                                   blurRadius: 10,
                                   offset: const Offset(0, 2),
                                 ),
                               ],
                               border: Border.all(
-                                color: AppColors.border.withOpacity(0.6),
+                                color: cardBorder,
                                 width: 1,
                               ),
                             ),
@@ -233,20 +241,20 @@ class _LoginViewState extends ConsumerState<LoginView> with SingleTickerProvider
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Welcome Back',
                                     style: TextStyle(
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold,
-                                      color: AppColors.primaryNavy,
+                                      color: primaryTextColor,
                                       letterSpacing: -0.3,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  const Text(
+                                  Text(
                                     'Sign in to access your viva voice sessions',
                                     style: TextStyle(
-                                      color: AppColors.textSecondary,
+                                      color: secondaryTextColor,
                                       fontSize: 13,
                                     ),
                                   ),
@@ -262,7 +270,7 @@ class _LoginViewState extends ConsumerState<LoginView> with SingleTickerProvider
                                     hint: 'e.g. student@vivaedge.edu',
                                     controller: _emailController,
                                     keyboardType: TextInputType.emailAddress,
-                                    prefixIcon: const Icon(Icons.email_outlined, size: 20, color: AppColors.primaryNavy),
+                                    prefixIcon: Icon(Icons.email_outlined, size: 20, color: iconColor),
                                     validator: (val) {
                                       if (val == null || val.trim().isEmpty) {
                                         return 'Please enter your email address';
@@ -281,12 +289,12 @@ class _LoginViewState extends ConsumerState<LoginView> with SingleTickerProvider
                                     hint: 'Enter your password',
                                     controller: _passwordController,
                                     obscureText: _obscurePassword,
-                                    prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20, color: AppColors.primaryNavy),
+                                    prefixIcon: Icon(Icons.lock_outline_rounded, size: 20, color: iconColor),
                                     suffixIcon: IconButton(
                                       icon: Icon(
                                         _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                                         size: 20,
-                                        color: AppColors.primaryNavy,
+                                        color: iconColor,
                                       ),
                                       onPressed: () {
                                         setState(() => _obscurePassword = !_obscurePassword);
@@ -301,8 +309,6 @@ class _LoginViewState extends ConsumerState<LoginView> with SingleTickerProvider
                                   ),
                                   const SizedBox(height: 8),
 
-
-
                                   const SizedBox(height: 24),
 
                                   AppButton(
@@ -316,9 +322,9 @@ class _LoginViewState extends ConsumerState<LoginView> with SingleTickerProvider
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        const Text(
+                                        Text(
                                           "Don't have an account? ",
-                                          style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                                          style: TextStyle(color: secondaryTextColor, fontSize: 14),
                                         ),
                                         GestureDetector(
                                           onTap: () => context.push('/auth/register'),

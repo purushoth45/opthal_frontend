@@ -139,6 +139,7 @@ class VivaViewModel extends StateNotifier<VivaState> {
       voiceState: VivaVoiceState.listening,
       spokenTranscript: '',
       recordingSeconds: 0,
+      errorMessage: null,
     );
 
     _startTimer();
@@ -146,20 +147,33 @@ class VivaViewModel extends StateNotifier<VivaState> {
     try {
       await _speechService.startListening(
         onResult: (transcript) {
-          state = state.copyWith(spokenTranscript: transcript);
+          state = state.copyWith(
+            spokenTranscript: transcript,
+            voiceState: VivaVoiceState.listening,
+          );
         },
         onListeningStarted: () {},
         onListeningStopped: () {
-          stopRecording();
+          _stopTimer();
+          state = state.copyWith(voiceState: VivaVoiceState.answerReady);
+        },
+        onError: (error) {
+          // Log error
+        },
+        onStatus: (status) {
+          if (status == 'done' || status == 'notListening') {
+            if (state.voiceState == VivaVoiceState.listening && state.spokenTranscript.isNotEmpty) {
+              _stopTimer();
+              state = state.copyWith(voiceState: VivaVoiceState.answerReady);
+            }
+          }
         },
       );
     } catch (e) {
       _stopTimer();
       state = state.copyWith(
-        voiceState: VivaVoiceState.answerReady,
-        spokenTranscript:
-            'Acute anterior uveitis, primary angle closure glaucoma, keratitis, optic neuritis.',
-        errorMessage: 'Voice mic note: Real-time transcript rendered.',
+        voiceState: VivaVoiceState.questionReady,
+        errorMessage: 'Microphone speech recognition error: ${e.toString()}',
       );
     }
   }
@@ -168,14 +182,9 @@ class VivaViewModel extends StateNotifier<VivaState> {
     _stopTimer();
     await _speechService.stopListening();
 
-    if (state.spokenTranscript.isEmpty) {
-      state = state.copyWith(
-        voiceState: VivaVoiceState.answerReady,
-        spokenTranscript: 'No spoken response captured.',
-      );
-    } else {
-      state = state.copyWith(voiceState: VivaVoiceState.answerReady);
-    }
+    state = state.copyWith(
+      voiceState: VivaVoiceState.answerReady,
+    );
   }
 
   void updateManualTranscript(String text) {

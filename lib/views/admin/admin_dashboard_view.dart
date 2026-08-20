@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ophthal_vivaedge/core/constants/app_colors.dart';
 import 'package:ophthal_vivaedge/viewmodels/viva_viewmodel.dart';
+import 'package:ophthal_vivaedge/shared/widgets/app_shimmer.dart';
 import 'package:ophthal_vivaedge/shared/widgets/confirmation_dialog.dart';
 import 'package:ophthal_vivaedge/viewmodels/admin_dashboard_viewmodel.dart';
 import 'package:ophthal_vivaedge/viewmodels/auth_viewmodel.dart';
@@ -29,51 +30,52 @@ class AdminDashboardView extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.primaryNavy,
         foregroundColor: Colors.white,
+        titleSpacing: 12,
         title: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.admin_panel_settings_rounded, size: 20, color: Colors.white),
-            SizedBox(width: 8),
-            Text(
-              'OPHTHAL VIVAEDGE',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
+            Icon(Icons.admin_panel_settings_rounded, size: 19, color: Colors.white),
+            SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                'OPHTHAL VIVAEDGE',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.white),
+              ),
             ),
           ],
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8.0),
+            padding: const EdgeInsets.only(right: 6.0),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 GestureDetector(
                   onTap: () => context.push('/profile'),
-                  child: CircleAvatar(
-                    radius: 14,
-                    backgroundColor: AppColors.accentBlue,
-                    child: Text(
-                      user?.name.substring(0, 1).toUpperCase() ?? 'A',
-                      style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                  child: Tooltip(
+                    message: user?.name ?? 'Admin Profile',
+                    child: CircleAvatar(
+                      radius: 13,
+                      backgroundColor: AppColors.accentBlue,
+                      child: Text(
+                        user?.name.substring(0, 1).toUpperCase() ?? 'A',
+                        style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 6),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 90),
-                  child: Text(
-                    user?.name ?? 'Admin',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.white, fontSize: 13),
-                  ),
-                ),
                 IconButton(
-                  icon: const Icon(Icons.settings_outlined, color: Colors.white70, size: 19),
+                  icon: const Icon(Icons.settings_outlined, color: Colors.white70, size: 18),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                   tooltip: 'Settings',
                   onPressed: () => context.push('/settings'),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.logout_rounded, color: Colors.white70, size: 19),
+                  icon: const Icon(Icons.logout_rounded, color: Colors.white70, size: 18),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                   tooltip: 'Sign Out',
                   onPressed: () async {
                     await ref.read(authViewModelProvider.notifier).logout();
@@ -280,9 +282,14 @@ class AdminDashboardView extends ConsumerWidget {
                         },
                       );
                     },
-                    loading: () => const SizedBox(
-                      height: 80,
-                      child: Center(child: CircularProgressIndicator()),
+                    loading: () => const AppShimmer(
+                      child: Row(
+                        children: [
+                          Expanded(child: ShimmerBox(width: double.infinity, height: 80, borderRadius: 14)),
+                          SizedBox(width: 14),
+                          Expanded(child: ShimmerBox(width: double.infinity, height: 80, borderRadius: 14)),
+                        ],
+                      ),
                     ),
                     error: (e, s) => const SizedBox.shrink(),
                   ),
@@ -496,7 +503,17 @@ class AdminDashboardView extends ConsumerWidget {
                         }).toList(),
                       );
                     },
-                    loading: () => const Center(child: CircularProgressIndicator()),
+                    loading: () => AppShimmer(
+                      child: Column(
+                        children: List.generate(
+                          3,
+                          (index) => const Padding(
+                            padding: EdgeInsets.only(bottom: 12.0),
+                            child: ShimmerBox(width: double.infinity, height: 72, borderRadius: 14),
+                          ),
+                        ),
+                      ),
+                    ),
                     error: (err, stack) => Text('Error: $err', style: TextStyle(color: primaryText)),
                   ),
                 ],

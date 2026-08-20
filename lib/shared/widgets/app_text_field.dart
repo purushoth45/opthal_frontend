@@ -33,6 +33,7 @@ class AppTextField extends StatelessWidget {
     final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1);
     final textColor = isDark ? Colors.white : AppColors.primaryNavy;
     final hintColor = isDark ? Colors.white54 : const Color(0xFF64748B);
+    final iconColor = isDark ? const Color(0xFF38BDF8) : AppColors.primaryNavy;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,7 +43,7 @@ class AppTextField extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white : AppColors.primaryNavy,
+            color: isDark ? Colors.white.withOpacity(0.9) : AppColors.primaryNavy,
           ),
         ),
         const SizedBox(height: 6),
@@ -62,8 +63,12 @@ class AppTextField extends StatelessWidget {
             fillColor: fieldBg,
             hintText: hint,
             hintStyle: TextStyle(color: hintColor, fontSize: 14, fontWeight: FontWeight.normal),
-            prefixIcon: prefixIcon,
-            suffixIcon: suffixIcon,
+            prefixIcon: prefixIcon != null
+                ? IconTheme(data: IconThemeData(color: iconColor, size: 20), child: prefixIcon!)
+                : null,
+            suffixIcon: suffixIcon != null
+                ? IconTheme(data: IconThemeData(color: iconColor, size: 20), child: suffixIcon!)
+                : null,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -71,7 +76,7 @@ class AppTextField extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.accentBlue, width: 2),
+              borderSide: BorderSide(color: isDark ? const Color(0xFF38BDF8) : AppColors.accentBlue, width: 2),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
