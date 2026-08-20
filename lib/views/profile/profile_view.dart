@@ -312,7 +312,7 @@ class ProfileView extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 90),
-             ],
+                  ],
                 ),
               ),
             ),
