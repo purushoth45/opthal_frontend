@@ -217,6 +217,33 @@ class SettingsView extends ConsumerWidget {
                             inactiveColor: Colors.white30,
                             onChanged: (val) => viewModel.setSpeechRate(val),
                           ),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton.icon(
+                              onPressed: () => viewModel.previewSpeech(),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.white.withOpacity(0.18),
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              icon: Icon(
+                                settings.isSpeakingPreview ? Icons.stop_circle_outlined : Icons.volume_up_rounded,
+                                size: 18,
+                                color: Colors.white,
+                              ),
+                              label: Text(
+                                settings.isSpeakingPreview ? 'Stop Test' : 'Test Speech Speed',
+                                style: const TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
                           const Divider(color: Colors.white30),
                           SwitchListTile(
                             contentPadding: EdgeInsets.zero,

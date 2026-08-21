@@ -6,6 +6,7 @@ import 'package:ophthal_vivaedge/repositories/api_question_repository.dart';
 import 'package:ophthal_vivaedge/repositories/question_repository.dart';
 import 'package:ophthal_vivaedge/services/speech_service.dart';
 import 'package:ophthal_vivaedge/services/tts_service.dart';
+import 'package:ophthal_vivaedge/viewmodels/settings_viewmodel.dart';
 
 class VivaState {
   final List<QuestionModel> questions;
@@ -56,6 +57,7 @@ class VivaState {
 }
 
 class VivaViewModel extends StateNotifier<VivaState> {
+  final Ref _ref;
   final QuestionRepository _repository;
   final SpeechService _speechService;
   final TtsService _ttsService;
@@ -63,19 +65,33 @@ class VivaViewModel extends StateNotifier<VivaState> {
   Timer? _timer;
 
   VivaViewModel({
+    required Ref ref,
     QuestionRepository? repository,
     SpeechService? speechService,
     TtsService? ttsService,
-  })  : _repository = repository ?? ApiQuestionRepository(),
+  })  : _ref = ref,
+        _repository = repository ?? ApiQuestionRepository(),
         _speechService = speechService ?? SpeechService(),
-        _ttsService = ttsService ?? TtsService(),
+        _ttsService = ttsService ?? ref.read(ttsServiceProvider),
         super(const VivaState()) {
     _initTts();
     loadQuestions();
   }
 
   Future<void> _initTts() async {
-    await _ttsService.init();
+    final settings = _ref.read(settingsViewModelProvider);
+    await _ttsService.init(settings.speechRate);
+  }
+
+  void _checkAutoPlay() {
+    final settings = _ref.read(settingsViewModelProvider);
+    if (settings.autoReadQuestion) {
+      Future.delayed(const Duration(milliseconds: 250), () {
+        if (mounted && state.voiceState == VivaVoiceState.questionReady) {
+          listenToQuestion();
+        }
+      });
+    }
   }
 
   Future<void> loadQuestions() async {
@@ -95,6 +111,7 @@ class VivaViewModel extends StateNotifier<VivaState> {
           spokenTranscript: '',
           showCorrectAnswer: false,
         );
+        _checkAutoPlay();
       }
     } catch (e) {
       state = state.copyWith(
@@ -114,11 +131,14 @@ class VivaViewModel extends StateNotifier<VivaState> {
       return;
     }
 
+    final settings = _ref.read(settingsViewModelProvider);
+    await _ttsService.setSpeechRate(settings.speechRate);
+
     state = state.copyWith(voiceState: VivaVoiceState.speakingQuestion);
     await _ttsService.speak(
       question.questionText,
       onComplete: () {
-        if (state.voiceState == VivaVoiceState.speakingQuestion) {
+        if (mounted && state.voiceState == VivaVoiceState.speakingQuestion) {
           state = state.copyWith(voiceState: VivaVoiceState.questionReady);
         }
       },
@@ -216,6 +236,7 @@ class VivaViewModel extends StateNotifier<VivaState> {
         recordingSeconds: 0,
         errorMessage: null,
       );
+      _checkAutoPlay();
     }
   }
 
@@ -233,6 +254,7 @@ class VivaViewModel extends StateNotifier<VivaState> {
         recordingSeconds: 0,
         errorMessage: null,
       );
+      _checkAutoPlay();
     }
   }
 
@@ -262,5 +284,10 @@ final questionRepositoryProvider = Provider<QuestionRepository>((ref) {
 });
 
 final vivaViewModelProvider = StateNotifierProvider<VivaViewModel, VivaState>((ref) {
-  return VivaViewModel(repository: ref.watch(questionRepositoryProvider));
+  return VivaViewModel(
+    ref: ref,
+    repository: ref.watch(questionRepositoryProvider),
+    ttsService: ref.watch(ttsServiceProvider),
+  );
 });
+
