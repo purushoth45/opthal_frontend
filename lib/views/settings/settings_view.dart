@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -19,7 +18,7 @@ class SettingsView extends ConsumerWidget {
     const primaryTextColor = Colors.white;
     final secondaryTextColor = Colors.white.withOpacity(0.85);
 
-    final cardBg = Colors.white.withOpacity(0.25);
+    final cardBg = Colors.white.withOpacity(0.22);
     final cardBorder = Colors.white.withOpacity(0.35);
 
     const headerStyle = TextStyle(
@@ -42,6 +41,7 @@ class SettingsView extends ConsumerWidget {
         ),
         body: SafeArea(
           child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.all(20.0),
             child: Center(
               child: ConstrainedBox(
@@ -58,81 +58,82 @@ class SettingsView extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: cardBg,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: cardBorder, width: 1.2),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: cardBg,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: cardBorder, width: 1.2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
                           ),
-                          padding: const EdgeInsets.all(18.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'App Theme Mode',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  color: primaryTextColor,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Select your preferred color mode or match system default',
-                                style: TextStyle(
-                                  color: secondaryTextColor,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                              Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: Colors.white.withOpacity(0.3),
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    _buildThemeOption(
-                                      context: context,
-                                      label: 'Light',
-                                      icon: Icons.light_mode_outlined,
-                                      mode: ThemeMode.light,
-                                      selectedMode: settings.themeMode,
-                                      isDark: isDark,
-                                      onTap: () => viewModel.setThemeMode(ThemeMode.light),
-                                    ),
-                                    _buildThemeOption(
-                                      context: context,
-                                      label: 'Dark',
-                                      icon: Icons.dark_mode_outlined,
-                                      mode: ThemeMode.dark,
-                                      selectedMode: settings.themeMode,
-                                      isDark: isDark,
-                                      onTap: () => viewModel.setThemeMode(ThemeMode.dark),
-                                    ),
-                                    _buildThemeOption(
-                                      context: context,
-                                      label: 'System',
-                                      icon: Icons.brightness_auto_outlined,
-                                      mode: ThemeMode.system,
-                                      selectedMode: settings.themeMode,
-                                      isDark: isDark,
-                                      onTap: () => viewModel.setThemeMode(ThemeMode.system),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(18.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'App Theme Mode',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: primaryTextColor,
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Select your preferred color mode or match system default',
+                            style: TextStyle(
+                              color: secondaryTextColor,
+                              fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.3),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                _buildThemeOption(
+                                  context: context,
+                                  label: 'Light',
+                                  icon: Icons.light_mode_outlined,
+                                  mode: ThemeMode.light,
+                                  selectedMode: settings.themeMode,
+                                  isDark: isDark,
+                                  onTap: () => viewModel.setThemeMode(ThemeMode.light),
+                                ),
+                                _buildThemeOption(
+                                  context: context,
+                                  label: 'Dark',
+                                  icon: Icons.dark_mode_outlined,
+                                  mode: ThemeMode.dark,
+                                  selectedMode: settings.themeMode,
+                                  isDark: isDark,
+                                  onTap: () => viewModel.setThemeMode(ThemeMode.dark),
+                                ),
+                                _buildThemeOption(
+                                  context: context,
+                                  label: 'System',
+                                  icon: Icons.brightness_auto_outlined,
+                                  mode: ThemeMode.system,
+                                  selectedMode: settings.themeMode,
+                                  isDark: isDark,
+                                  onTap: () => viewModel.setThemeMode(ThemeMode.system),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -146,97 +147,98 @@ class SettingsView extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: cardBg,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: cardBorder, width: 1.2),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: cardBg,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: cardBorder, width: 1.2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
                           ),
-                          padding: const EdgeInsets.all(18.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(18.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          'Text-To-Speech Speed',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14,
-                                            color: primaryTextColor,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          'Adjust audio reader playback rate for viva questions',
-                                          style: TextStyle(
-                                            color: secondaryTextColor,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.25),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      '${(settings.speechRate * 100).round()}%',
-                                      style: const TextStyle(
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Text-To-Speech Speed',
+                                      style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        fontSize: 12.5,
+                                        fontSize: 14,
+                                        color: primaryTextColor,
                                       ),
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      'Adjust audio reader playback rate for viva questions',
+                                      style: TextStyle(
+                                        color: secondaryTextColor,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              Slider(
-                                value: settings.speechRate,
-                                min: 0.2,
-                                max: 1.0,
-                                divisions: 8,
-                                activeColor: Colors.white,
-                                inactiveColor: Colors.white30,
-                                onChanged: (val) => viewModel.setSpeechRate(val),
-                              ),
-                              const Divider(color: Colors.white30),
-                              SwitchListTile(
-                                contentPadding: EdgeInsets.zero,
-                                title: const Text(
-                                  'Auto-Play Question Audio',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: primaryTextColor,
+                              const SizedBox(width: 10),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.25),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  '${(settings.speechRate * 100).round()}%',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    fontSize: 12.5,
                                   ),
                                 ),
-                                subtitle: Text(
-                                  'Automatically speak question prompt when starting a new question',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: secondaryTextColor,
-                                  ),
-                                ),
-                                value: settings.autoReadQuestion,
-                                onChanged: (val) => viewModel.setAutoReadQuestion(val),
                               ),
                             ],
                           ),
-                        ),
+                          Slider(
+                            value: settings.speechRate,
+                            min: 0.2,
+                            max: 1.0,
+                            divisions: 8,
+                            activeColor: Colors.white,
+                            inactiveColor: Colors.white30,
+                            onChanged: (val) => viewModel.setSpeechRate(val),
+                          ),
+                          const Divider(color: Colors.white30),
+                          SwitchListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text(
+                              'Auto-Play Question Audio',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: primaryTextColor,
+                              ),
+                            ),
+                            subtitle: Text(
+                              'Automatically speak question prompt when starting a new question',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: secondaryTextColor,
+                              ),
+                            ),
+                            value: settings.autoReadQuestion,
+                            onChanged: (val) => viewModel.setAutoReadQuestion(val),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -250,36 +252,37 @@ class SettingsView extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: cardBg,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: cardBorder, width: 1.2),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: cardBg,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: cardBorder, width: 1.2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
                           ),
-                          child: SwitchListTile(
-                            title: const Text(
-                              'High Contrast Medical Tables',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: primaryTextColor,
-                              ),
-                            ),
-                            subtitle: Text(
-                              'Enhanced column border separation for medical tables',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: secondaryTextColor,
-                              ),
-                            ),
-                            value: settings.highContrastTables,
-                            onChanged: (val) => viewModel.toggleHighContrastTables(val),
+                        ],
+                      ),
+                      child: SwitchListTile(
+                        title: const Text(
+                          'High Contrast Medical Tables',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: primaryTextColor,
                           ),
                         ),
+                        subtitle: Text(
+                          'Enhanced column border separation for medical tables',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: secondaryTextColor,
+                          ),
+                        ),
+                        value: settings.highContrastTables,
+                        onChanged: (val) => viewModel.toggleHighContrastTables(val),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -293,57 +296,58 @@ class SettingsView extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: cardBg,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: cardBorder, width: 1.2),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: cardBg,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: cardBorder, width: 1.2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
                           ),
-                          child: Column(
-                            children: [
-                              ListTile(
-                                leading: const Icon(
-                                  Icons.slideshow_rounded,
-                                  color: Colors.white,
-                                ),
-                                title: const Text(
-                                  'Replay Onboarding Guide',
-                                  style: TextStyle(color: primaryTextColor, fontWeight: FontWeight.w600),
-                                ),
-                                subtitle: Text(
-                                  'Watch the 3-step feature walkthrough',
-                                  style: TextStyle(color: secondaryTextColor, fontSize: 12),
-                                ),
-                                onTap: () async {
-                                  final storage = SecureStorageService();
-                                  await storage.setCompletedOnboarding(false);
-                                  if (context.mounted) {
-                                    context.go('/onboarding');
-                                  }
-                                },
-                              ),
-                              const Divider(height: 1, color: Colors.white30),
-                              ListTile(
-                                leading: const Icon(
-                                  Icons.info_outline_rounded,
-                                  color: Colors.white,
-                                ),
-                                title: const Text(
-                                  'About Ophthal VivaEdge',
-                                  style: TextStyle(color: primaryTextColor, fontWeight: FontWeight.w600),
-                                ),
-                                subtitle: Text(
-                                  'Version 1.0.0 (Master Release)',
-                                  style: TextStyle(color: secondaryTextColor, fontSize: 12),
-                                ),
-                              ),
-                            ],
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          ListTile(
+                            leading: const Icon(
+                              Icons.slideshow_rounded,
+                              color: Colors.white,
+                            ),
+                            title: const Text(
+                              'Replay Onboarding Guide',
+                              style: TextStyle(color: primaryTextColor, fontWeight: FontWeight.w600),
+                            ),
+                            subtitle: Text(
+                              'Watch the 3-step feature walkthrough',
+                              style: TextStyle(color: secondaryTextColor, fontSize: 12),
+                            ),
+                            onTap: () async {
+                              final storage = SecureStorageService();
+                              await storage.setCompletedOnboarding(false);
+                              if (context.mounted) {
+                                context.go('/onboarding');
+                              }
+                            },
                           ),
-                        ),
+                          const Divider(height: 1, color: Colors.white30),
+                          ListTile(
+                            leading: const Icon(
+                              Icons.info_outline_rounded,
+                              color: Colors.white,
+                            ),
+                            title: const Text(
+                              'About Ophthal VivaEdge',
+                              style: TextStyle(color: primaryTextColor, fontWeight: FontWeight.w600),
+                            ),
+                            subtitle: Text(
+                              'Version 1.0.0 (Master Release)',
+                              style: TextStyle(color: secondaryTextColor, fontSize: 12),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 90),
@@ -372,7 +376,7 @@ class SettingsView extends ConsumerWidget {
       child: GestureDetector(
         onTap: onTap,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
+          duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             color: isSelected ? Colors.white : Colors.transparent,

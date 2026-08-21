@@ -12,11 +12,11 @@ class ApiConfig {
 
   static String get baseUrl {
     if (kIsWeb) {
-      return 'http://172.25.48.52:8080/api';
+      return 'http://180.235.121.245:8080/api';
     }
     try {
       if (Platform.isAndroid) {
-        return 'http://172.25.48.52:8080/api';
+        return 'http://180.235.121.245:8080/api';
       }
     } catch (_) {}
     return 'http://localhost:8080/api';

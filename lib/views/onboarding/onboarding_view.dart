@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ophthal_vivaedge/core/constants/app_colors.dart';
@@ -157,48 +156,42 @@ class _OnboardingViewState extends State<OnboardingView> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               // ANIMATED MEDICAL ILLUSTRATION CARD
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(32),
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-                                  child: Container(
-                                    width: 220,
-                                    height: 220,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.12),
-                                      borderRadius: BorderRadius.circular(32),
-                                      border: Border.all(
-                                        color: Colors.white.withOpacity(0.3),
-                                        width: 1.5,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: slide.accentColor.withOpacity(0.35),
-                                          blurRadius: 30,
-                                          spreadRadius: 2,
+                              Container(
+                                width: 220,
+                                height: 220,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.12),
+                                  borderRadius: BorderRadius.circular(32),
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.3),
+                                    width: 1.5,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: slide.accentColor.withOpacity(0.35),
+                                      blurRadius: 30,
+                                      spreadRadius: 2,
+                                    ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Container(
+                                        width: 140,
+                                        height: 140,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: slide.accentColor.withOpacity(0.2),
                                         ),
-                                      ],
-                                    ),
-                                    child: Center(
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          Container(
-                                            width: 140,
-                                            height: 140,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: slide.accentColor.withOpacity(0.2),
-                                            ),
-                                          ),
-                                          Icon(
-                                            slide.icon,
-                                            size: 80,
-                                            color: Colors.white,
-                                          ),
-                                        ],
                                       ),
-                                    ),
+                                      Icon(
+                                        slide.icon,
+                                        size: 80,
+                                        color: Colors.white,
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),

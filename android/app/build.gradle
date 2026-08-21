@@ -49,6 +49,10 @@ android {
 
     buildTypes {
         release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
             if (keystorePropertiesFile.exists() && keystoreProperties['storeFile'] != null) {
                 signingConfig = signingConfigs.release
             } else {

@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -28,7 +27,7 @@ class VivaView extends ConsumerWidget {
     final secondaryTextColor = Colors.white.withOpacity(0.85);
 
     // 25% opacity fill = 75% background gradient visibility
-    final cardBg = Colors.white.withOpacity(0.25);
+    final cardBg = Colors.white.withOpacity(0.22);
     final cardBorder = Colors.white.withOpacity(0.35);
 
     if (vivaState.voiceState == VivaVoiceState.questionLoading) {
@@ -108,6 +107,7 @@ class VivaView extends ConsumerWidget {
 
               Expanded(
                 child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.all(20.0),
                   child: Center(
                     child: ConstrainedBox(
@@ -116,268 +116,256 @@ class VivaView extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           // QUESTION CARD
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(22),
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: cardBg,
-                                  borderRadius: BorderRadius.circular(22),
-                                  border: Border.all(color: cardBorder, width: 1.2),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.12),
-                                      blurRadius: 16,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
+                          Container(
+                            decoration: BoxDecoration(
+                              color: cardBg,
+                              borderRadius: BorderRadius.circular(22),
+                              border: Border.all(color: cardBorder, width: 1.2),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.12),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 4),
                                 ),
-                                padding: const EdgeInsets.all(22.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                              ],
+                            ),
+                            padding: const EdgeInsets.all(22.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white.withOpacity(0.25),
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          child: Text(
-                                            question.topic.toUpperCase(),
-                                            style: const TextStyle(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                              letterSpacing: 0.5,
-                                            ),
-                                          ),
-                                        ),
-                                        Row(
-                                          children: [
-                                            const Icon(Icons.psychology_outlined, size: 16, color: Colors.white),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              'MBBS Viva',
-                                              style: TextStyle(
-                                                fontSize: 11.5,
-                                                color: secondaryTextColor,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 14),
-                                    Text(
-                                      question.questionText,
-                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                            color: primaryTextColor,
-                                            fontWeight: FontWeight.bold,
-                                            height: 1.35,
-                                            fontSize: 19,
-                                          ),
-                                    ),
-                                    const SizedBox(height: 18),
-
-                                    Center(
-                                      child: OutlinedButton.icon(
-                                        onPressed: () => viewModel.listenToQuestion(),
-                                        style: OutlinedButton.styleFrom(
-                                          side: const BorderSide(color: Colors.white, width: 1.5),
-                                          foregroundColor: Colors.white,
-                                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(20),
-                                          ),
-                                        ),
-                                        icon: Icon(
-                                          vivaState.voiceState == VivaVoiceState.speakingQuestion
-                                              ? Icons.volume_off_rounded
-                                              : Icons.volume_up_rounded,
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.25),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        question.topic.toUpperCase(),
+                                        style: const TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
                                           color: Colors.white,
-                                          size: 18,
-                                        ),
-                                        label: Text(
-                                          vivaState.voiceState == VivaVoiceState.speakingQuestion
-                                              ? 'Pause Question Audio'
-                                              : 'Listen to Question Audio 🔊',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 13,
-                                          ),
+                                          letterSpacing: 0.5,
                                         ),
                                       ),
                                     ),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.psychology_outlined, size: 16, color: Colors.white),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          'MBBS Viva',
+                                          style: TextStyle(
+                                            fontSize: 11.5,
+                                            color: secondaryTextColor,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 ),
-                              ),
+                                const SizedBox(height: 14),
+                                Text(
+                                  question.questionText,
+                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                        color: primaryTextColor,
+                                        fontWeight: FontWeight.bold,
+                                        height: 1.35,
+                                        fontSize: 19,
+                                      ),
+                                ),
+                                const SizedBox(height: 18),
+
+                                Center(
+                                  child: OutlinedButton.icon(
+                                    onPressed: () => viewModel.listenToQuestion(),
+                                    style: OutlinedButton.styleFrom(
+                                      side: const BorderSide(color: Colors.white, width: 1.5),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                    ),
+                                    icon: Icon(
+                                      vivaState.voiceState == VivaVoiceState.speakingQuestion
+                                          ? Icons.volume_off_rounded
+                                          : Icons.volume_up_rounded,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                    label: Text(
+                                      vivaState.voiceState == VivaVoiceState.speakingQuestion
+                                          ? 'Pause Question Audio'
+                                          : 'Listen to Question Audio 🔊',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           const SizedBox(height: 20),
 
                           // SPEECH RECOGNITION CARD
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(22),
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: cardBg,
-                                  borderRadius: BorderRadius.circular(22),
-                                  border: Border.all(
-                                    color: vivaState.voiceState == VivaVoiceState.listening
-                                        ? AppColors.recordingRed
-                                        : cardBorder,
-                                    width: vivaState.voiceState == VivaVoiceState.listening ? 1.5 : 1.2,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: vivaState.voiceState == VivaVoiceState.listening
-                                          ? AppColors.recordingRed.withOpacity(0.2)
-                                          : Colors.black.withOpacity(0.12),
-                                      blurRadius: 16,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
+                          Container(
+                            decoration: BoxDecoration(
+                              color: cardBg,
+                              borderRadius: BorderRadius.circular(22),
+                              border: Border.all(
+                                color: vivaState.voiceState == VivaVoiceState.listening
+                                    ? AppColors.recordingRed
+                                    : cardBorder,
+                                width: vivaState.voiceState == VivaVoiceState.listening ? 1.5 : 1.2,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: vivaState.voiceState == VivaVoiceState.listening
+                                      ? AppColors.recordingRed.withOpacity(0.2)
+                                      : Colors.black.withOpacity(0.12),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 4),
                                 ),
-                                padding: const EdgeInsets.all(22.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                              ],
+                            ),
+                            padding: const EdgeInsets.all(22.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Row(
+                                        Icon(
+                                          Icons.mic_none_rounded,
+                                          size: 20,
+                                          color: vivaState.voiceState == VivaVoiceState.listening
+                                              ? AppColors.recordingRed
+                                              : secondaryTextColor,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          'YOUR SPOKEN TRANSCRIPT',
+                                          style: TextStyle(
+                                            fontSize: 12.5,
+                                            fontWeight: FontWeight.bold,
+                                            color: vivaState.voiceState == VivaVoiceState.listening
+                                              ? AppColors.recordingRed
+                                              : secondaryTextColor,
+                                            letterSpacing: 0.5,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    if (vivaState.voiceState == VivaVoiceState.listening) ...[
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.recordingRed.withOpacity(0.2),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Row(
                                           children: [
-                                            Icon(
-                                              Icons.mic_none_rounded,
-                                              size: 20,
-                                              color: vivaState.voiceState == VivaVoiceState.listening
-                                                  ? AppColors.recordingRed
-                                                  : secondaryTextColor,
+                                            Container(
+                                              width: 8,
+                                              height: 8,
+                                              decoration: const BoxDecoration(
+                                                color: AppColors.recordingRed,
+                                                shape: BoxShape.circle,
+                                              ),
                                             ),
-                                            const SizedBox(width: 8),
+                                            const SizedBox(width: 6),
                                             Text(
-                                              'YOUR SPOKEN TRANSCRIPT',
-                                              style: TextStyle(
-                                                fontSize: 12.5,
+                                              _formatTimer(vivaState.recordingSeconds),
+                                              style: const TextStyle(
+                                                color: Colors.white,
                                                 fontWeight: FontWeight.bold,
-                                                color: vivaState.voiceState == VivaVoiceState.listening
-                                                    ? AppColors.recordingRed
-                                                    : secondaryTextColor,
-                                                letterSpacing: 0.5,
+                                                fontSize: 12,
                                               ),
                                             ),
                                           ],
                                         ),
-                                        if (vivaState.voiceState == VivaVoiceState.listening) ...[
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              color: AppColors.recordingRed.withOpacity(0.2),
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                  width: 8,
-                                                  height: 8,
-                                                  decoration: const BoxDecoration(
-                                                    color: AppColors.recordingRed,
-                                                    shape: BoxShape.circle,
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 6),
-                                                Text(
-                                                  _formatTimer(vivaState.recordingSeconds),
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 12,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ],
-                                    ),
-                                    const SizedBox(height: 14),
-
-                                    Container(
-                                      width: double.infinity,
-                                      constraints: const BoxConstraints(minHeight: 90),
-                                      padding: const EdgeInsets.all(16),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.18),
-                                        borderRadius: BorderRadius.circular(14),
-                                        border: Border.all(color: Colors.white.withOpacity(0.3)),
                                       ),
-                                      child: SelectableText(
-                                        vivaState.spokenTranscript.isEmpty
-                                            ? 'Tap "SPEAK NOW" and recite your viva answer clearly...'
-                                            : vivaState.spokenTranscript,
-                                        style: TextStyle(
-                                          color: vivaState.spokenTranscript.isEmpty
-                                              ? Colors.white70
-                                              : Colors.white,
-                                          fontStyle: vivaState.spokenTranscript.isEmpty
-                                              ? FontStyle.italic
-                                              : FontStyle.normal,
-                                          fontSize: 15,
-                                          height: 1.45,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 20),
-
-                                    Center(
-                                      child: vivaState.voiceState == VivaVoiceState.listening
-                                          ? ElevatedButton.icon(
-                                              onPressed: () => viewModel.stopRecording(),
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: AppColors.recordingRed,
-                                                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(24),
-                                                ),
-                                              ),
-                                              icon: const Icon(Icons.stop_rounded, size: 22),
-                                              label: const Text('STOP RECORDING', style: TextStyle(fontWeight: FontWeight.bold)),
-                                            )
-                                          : ElevatedButton.icon(
-                                              onPressed: () => viewModel.toggleRecording(),
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: Colors.white,
-                                                foregroundColor: AppColors.primaryNavy,
-                                                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(24),
-                                                ),
-                                                elevation: 4,
-                                              ),
-                                              icon: const Icon(Icons.mic_rounded, size: 22, color: AppColors.primaryNavy),
-                                              label: const Text(
-                                                'SPEAK NOW 🎙',
-                                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, letterSpacing: 0.5, color: AppColors.primaryNavy),
-                                              ),
-                                            ),
-                                    ),
+                                    ],
                                   ],
                                 ),
-                              ),
+                                const SizedBox(height: 14),
+
+                                Container(
+                                  width: double.infinity,
+                                  constraints: const BoxConstraints(minHeight: 90),
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.18),
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(color: Colors.white.withOpacity(0.3)),
+                                  ),
+                                  child: SelectableText(
+                                    vivaState.spokenTranscript.isEmpty
+                                        ? 'Tap "SPEAK NOW" and recite your viva answer clearly...'
+                                        : vivaState.spokenTranscript,
+                                    style: TextStyle(
+                                      color: vivaState.spokenTranscript.isEmpty
+                                          ? Colors.white70
+                                          : Colors.white,
+                                      fontStyle: vivaState.spokenTranscript.isEmpty
+                                          ? FontStyle.italic
+                                          : FontStyle.normal,
+                                      fontSize: 15,
+                                      height: 1.45,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+
+                                Center(
+                                  child: vivaState.voiceState == VivaVoiceState.listening
+                                      ? ElevatedButton.icon(
+                                          onPressed: () => viewModel.stopRecording(),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: AppColors.recordingRed,
+                                            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(24),
+                                            ),
+                                          ),
+                                          icon: const Icon(Icons.stop_rounded, size: 22),
+                                          label: const Text('STOP RECORDING', style: TextStyle(fontWeight: FontWeight.bold)),
+                                        )
+                                      : ElevatedButton.icon(
+                                          onPressed: () => viewModel.toggleRecording(),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.white,
+                                            foregroundColor: AppColors.primaryNavy,
+                                            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(24),
+                                            ),
+                                            elevation: 4,
+                                          ),
+                                          icon: const Icon(Icons.mic_rounded, size: 22, color: AppColors.primaryNavy),
+                                          label: const Text(
+                                            'SPEAK NOW 🎙',
+                                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, letterSpacing: 0.5, color: AppColors.primaryNavy),
+                                          ),
+                                        ),
+                                ),
+                              ],
                             ),
                           ),
                           const SizedBox(height: 20),
 
                           AnimatedCrossFade(
-                            duration: const Duration(milliseconds: 400),
+                            duration: const Duration(milliseconds: 300),
                             crossFadeState: vivaState.showCorrectAnswer
                                 ? CrossFadeState.showSecond
                                 : CrossFadeState.showFirst,
@@ -403,63 +391,57 @@ class VivaView extends ConsumerWidget {
                                 ),
                               ),
                             ),
-                            secondChild: ClipRRect(
-                              borderRadius: BorderRadius.circular(22),
-                              child: BackdropFilter(
-                                filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: cardBg,
-                                    borderRadius: BorderRadius.circular(22),
-                                    border: Border.all(color: Colors.white.withOpacity(0.4), width: 1.5),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.12),
-                                        blurRadius: 16,
-                                        offset: const Offset(0, 4),
-                                      ),
-                                    ],
+                            secondChild: Container(
+                              decoration: BoxDecoration(
+                                color: cardBg,
+                                borderRadius: BorderRadius.circular(22),
+                                border: Border.all(color: Colors.white.withOpacity(0.4), width: 1.5),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.12),
+                                    blurRadius: 16,
+                                    offset: const Offset(0, 4),
                                   ),
-                                  padding: const EdgeInsets.all(22.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                ],
+                              ),
+                              padding: const EdgeInsets.all(22.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      const Row(
                                         children: [
-                                          const Row(
-                                            children: [
-                                              Icon(
-                                                Icons.check_circle_outline_rounded,
-                                                size: 22,
-                                                color: Colors.white,
-                                              ),
-                                              SizedBox(width: 8),
-                                              Text(
-                                                'OFFICIAL VIVA ANSWER',
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                  letterSpacing: 0.5,
-                                                ),
-                                              ),
-                                            ],
+                                          Icon(
+                                            Icons.check_circle_outline_rounded,
+                                            size: 22,
+                                            color: Colors.white,
                                           ),
-                                          IconButton(
-                                            icon: const Icon(Icons.close_rounded, size: 18, color: Colors.white),
-                                            onPressed: () => viewModel.toggleShowCorrectAnswer(),
+                                          SizedBox(width: 8),
+                                          Text(
+                                            'OFFICIAL VIVA ANSWER',
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              letterSpacing: 0.5,
+                                            ),
                                           ),
                                         ],
                                       ),
-                                      const Divider(height: 24, color: Colors.white30),
-
-                                      AnswerContentRenderer(
-                                        blocks: question.answerBlocks,
+                                      IconButton(
+                                        icon: const Icon(Icons.close_rounded, size: 18, color: Colors.white),
+                                        onPressed: () => viewModel.toggleShowCorrectAnswer(),
                                       ),
                                     ],
                                   ),
-                                ),
+                                  const Divider(height: 24, color: Colors.white30),
+
+                                  AnswerContentRenderer(
+                                    blocks: question.answerBlocks,
+                                  ),
+                                ],
                               ),
                             ),
                           ),
