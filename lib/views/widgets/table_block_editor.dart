@@ -84,9 +84,21 @@ class _TableBlockEditorState extends State<TableBlockEditor> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final rowBg = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
+    final fieldBg = isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9);
+    final borderCol = isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1);
+    final textCol = isDark ? Colors.white : AppColors.primaryNavy;
+    final labelCol = isDark ? Colors.white70 : AppColors.textSecondary;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      color: Colors.white,
+      color: cardBg,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: borderCol, width: 1),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -97,7 +109,7 @@ class _TableBlockEditorState extends State<TableBlockEditor> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.success.withOpacity(0.1),
+                    color: isDark ? const Color(0xFF064E3B) : AppColors.success.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: const Text(
@@ -112,12 +124,12 @@ class _TableBlockEditorState extends State<TableBlockEditor> {
                 const Spacer(),
                 if (widget.onMoveUp != null)
                   IconButton(
-                    icon: const Icon(Icons.arrow_upward_rounded, size: 18),
+                    icon: Icon(Icons.arrow_upward_rounded, size: 18, color: textCol),
                     onPressed: widget.onMoveUp,
                   ),
                 if (widget.onMoveDown != null)
                   IconButton(
-                    icon: const Icon(Icons.arrow_downward_rounded, size: 18),
+                    icon: Icon(Icons.arrow_downward_rounded, size: 18, color: textCol),
                     onPressed: widget.onMoveDown,
                   ),
                 IconButton(
@@ -128,9 +140,9 @@ class _TableBlockEditorState extends State<TableBlockEditor> {
             ),
             const SizedBox(height: 12),
 
-            const Text(
+            Text(
               'Column Headers',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.textSecondary),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: labelCol),
             ),
             const SizedBox(height: 8),
             SingleChildScrollView(
@@ -146,10 +158,22 @@ class _TableBlockEditorState extends State<TableBlockEditor> {
                           Expanded(
                             child: TextFormField(
                               initialValue: _columns[colIdx],
+                              style: TextStyle(fontSize: 13, color: textCol, fontWeight: FontWeight.w600),
                               decoration: InputDecoration(
+                                filled: true,
+                                fillColor: fieldBg,
                                 labelText: 'Col ${colIdx + 1}',
+                                labelStyle: TextStyle(color: labelCol, fontSize: 12),
                                 isDense: true,
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: borderCol),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: AppColors.accentBlue, width: 1.5),
+                                ),
                               ),
                               onChanged: (val) {
                                 _columns[colIdx] = val;
@@ -181,11 +205,11 @@ class _TableBlockEditorState extends State<TableBlockEditor> {
               ),
             ),
 
-            const Divider(height: 24),
+            Divider(height: 24, color: borderCol),
 
-            const Text(
+            Text(
               'Table Rows & Cell Content',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.textSecondary),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: labelCol),
             ),
             const SizedBox(height: 8),
 
@@ -194,9 +218,9 @@ class _TableBlockEditorState extends State<TableBlockEditor> {
                 margin: const EdgeInsets.only(bottom: 12),
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.background,
+                  color: rowBg,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(color: borderCol),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -206,7 +230,7 @@ class _TableBlockEditorState extends State<TableBlockEditor> {
                       children: [
                         Text(
                           'Row ${rowIdx + 1}',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: textCol),
                         ),
                         if (_rows.length > 1)
                           IconButton(
@@ -223,10 +247,22 @@ class _TableBlockEditorState extends State<TableBlockEditor> {
                         child: TextFormField(
                           initialValue: cellValue,
                           maxLines: 2,
+                          style: TextStyle(fontSize: 13, color: textCol),
                           decoration: InputDecoration(
+                            filled: true,
+                            fillColor: fieldBg,
                             labelText: '${_columns[colIdx]} Content',
+                            labelStyle: TextStyle(color: labelCol, fontSize: 12),
                             isDense: true,
                             contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: borderCol),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: AppColors.accentBlue, width: 1.5),
+                            ),
                           ),
                           onChanged: (val) {
                             if (colIdx < _rows[rowIdx].length) {
@@ -248,6 +284,7 @@ class _TableBlockEditorState extends State<TableBlockEditor> {
                 onPressed: _addRow,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.accentBlue,
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 ),
                 icon: const Icon(Icons.add_rounded, size: 16),

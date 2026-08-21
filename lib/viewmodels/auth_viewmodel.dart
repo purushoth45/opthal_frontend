@@ -63,20 +63,16 @@ class AuthViewModel extends StateNotifier<AuthState> {
     required String email,
     required String password,
     required String phoneNumber,
-    required String medicalCollege,
-    required String mbbsYear,
   }) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
-      final user = await _authRepository.register(
+      await _authRepository.register(
         name: name,
         email: email,
         password: password,
         phoneNumber: phoneNumber,
-        medicalCollege: medicalCollege,
-        mbbsYear: mbbsYear,
       );
-      state = AuthState(user: user, isLoading: false);
+      state = state.copyWith(isLoading: false);
       return true;
     } catch (e) {
       state = state.copyWith(
@@ -87,12 +83,20 @@ class AuthViewModel extends StateNotifier<AuthState> {
     }
   }
 
-  Future<bool> sendPasswordResetEmail(String email) async {
+  Future<bool> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String confirmNewPassword,
+  }) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
-      final result = await _authRepository.sendPasswordResetEmail(email);
+      await _authRepository.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+        confirmNewPassword: confirmNewPassword,
+      );
       state = state.copyWith(isLoading: false);
-      return result;
+      return true;
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -100,6 +104,10 @@ class AuthViewModel extends StateNotifier<AuthState> {
       );
       return false;
     }
+  }
+
+  void updateUser(UserModel user) {
+    state = state.copyWith(user: user);
   }
 
   Future<void> logout() async {

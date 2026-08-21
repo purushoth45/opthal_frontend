@@ -13,6 +13,8 @@ extension UserRoleX on UserRole {
     }
   }
 
+  
+
   static UserRole fromString(String role) {
     if (role.toUpperCase() == 'ADMIN') {
       return UserRole.admin;

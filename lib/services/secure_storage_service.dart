@@ -13,6 +13,7 @@ class SecureStorageService {
   static const String _keyTtsRate = 'tts_speech_rate';
   static const String _keyAutoRead = 'auto_read_question';
   static const String _keyThemeMode = 'app_theme_mode';
+  static const String _keyHighContrast = 'high_contrast_tables';
 
   Future<void> saveToken(String token) async {
     await _storage.write(key: _keyToken, value: token);
@@ -45,8 +46,8 @@ class SecureStorageService {
 
   Future<double> getTtsSpeechRate() async {
     final val = await _storage.read(key: _keyTtsRate);
-    if (val != null) return double.tryParse(val) ?? 0.48;
-    return 0.48;
+    if (val != null) return double.tryParse(val) ?? 0.5;
+    return 0.5;
   }
 
   Future<void> saveAutoReadQuestion(bool autoRead) async {
@@ -56,6 +57,16 @@ class SecureStorageService {
   Future<bool> getAutoReadQuestion() async {
     final val = await _storage.read(key: _keyAutoRead);
     return val == 'true';
+  }
+
+  Future<void> saveHighContrastTables(bool highContrast) async {
+    await _storage.write(key: _keyHighContrast, value: highContrast.toString());
+  }
+
+  Future<bool> getHighContrastTables() async {
+    final val = await _storage.read(key: _keyHighContrast);
+    if (val != null) return val == 'true';
+    return true;
   }
 
   Future<void> saveThemeMode(ThemeMode mode) async {

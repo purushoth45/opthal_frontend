@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:ophthal_vivaedge/core/enums/answer_block_type.dart';
 
 class AnswerBlockModel {
@@ -7,6 +8,8 @@ class AnswerBlockModel {
   final int displayOrder;
   final List<String>? columns;
   final List<List<String>>? rows;
+  final Uint8List? imageBytes;
+  final String? localFileName;
 
   const AnswerBlockModel({
     this.id,
@@ -15,6 +18,8 @@ class AnswerBlockModel {
     required this.displayOrder,
     this.columns,
     this.rows,
+    this.imageBytes,
+    this.localFileName,
   });
 
   factory AnswerBlockModel.text({
@@ -58,10 +63,29 @@ class AnswerBlockModel {
     );
   }
 
+  factory AnswerBlockModel.image({
+    int? id,
+    required String filename,
+    required int displayOrder,
+    Uint8List? imageBytes,
+    String? localFileName,
+  }) {
+    return AnswerBlockModel(
+      id: id,
+      type: AnswerBlockType.image,
+      content: filename,
+      displayOrder: displayOrder,
+      imageBytes: imageBytes,
+      localFileName: localFileName,
+    );
+  }
+
   factory AnswerBlockModel.fromJson(Map<String, dynamic> json) {
     List<String>? parsedColumns;
     if (json['columns'] != null) {
       parsedColumns = List<String>.from(json['columns']);
+    } else if (json['table'] != null && json['table']['columns'] != null) {
+      parsedColumns = List<String>.from(json['table']['columns']);
     }
 
     List<List<String>>? parsedRows;
@@ -69,12 +93,28 @@ class AnswerBlockModel {
       parsedRows = (json['rows'] as List)
           .map((row) => List<String>.from(row))
           .toList();
+    } else if (json['table'] != null && json['table']['rows'] != null) {
+      parsedRows = (json['table']['rows'] as List)
+          .map((row) => List<String>.from(row))
+          .toList();
+    }
+
+    final rawType = json['type'] as String? ?? 'TEXT';
+    final rawContent = json['content'] as String?;
+
+    AnswerBlockType blockType = AnswerBlockTypeX.fromString(rawType);
+    String? content = rawContent;
+
+    // Decode markdown heading prefix if type is TEXT and content starts with "## "
+    if (blockType == AnswerBlockType.text && content != null && content.startsWith('## ')) {
+      blockType = AnswerBlockType.heading;
+      content = content.substring(3);
     }
 
     return AnswerBlockModel(
       id: json['id'] as int?,
-      type: AnswerBlockTypeX.fromString(json['type'] as String? ?? 'TEXT'),
-      content: json['content'] as String?,
+      type: blockType,
+      content: content,
       displayOrder: json['displayOrder'] as int? ?? 1,
       columns: parsedColumns,
       rows: parsedRows,
@@ -82,10 +122,11 @@ class AnswerBlockModel {
   }
 
   Map<String, dynamic> toJson() {
+    final isHeading = type == AnswerBlockType.heading;
     return {
       if (id != null) 'id': id,
-      'type': type.value,
-      if (content != null) 'content': content,
+      'type': isHeading ? 'TEXT' : type.value,
+      'content': isHeading ? '## ${content ?? ""}' : content,
       'displayOrder': displayOrder,
       if (columns != null) 'columns': columns,
       if (rows != null) 'rows': rows,
@@ -99,6 +140,8 @@ class AnswerBlockModel {
     int? displayOrder,
     List<String>? columns,
     List<List<String>>? rows,
+    Uint8List? imageBytes,
+    String? localFileName,
   }) {
     return AnswerBlockModel(
       id: id ?? this.id,
@@ -107,6 +150,8 @@ class AnswerBlockModel {
       displayOrder: displayOrder ?? this.displayOrder,
       columns: columns ?? (this.columns != null ? List<String>.from(this.columns!) : null),
       rows: rows ?? this.rows?.map((r) => List<String>.from(r)).toList(),
+      imageBytes: imageBytes ?? this.imageBytes,
+      localFileName: localFileName ?? this.localFileName,
     );
   }
 }

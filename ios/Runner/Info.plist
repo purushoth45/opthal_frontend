@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Ophthal VivaEdge requires microphone access for voice-based viva voce sessions.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Ophthal VivaEdge requires speech recognition to evaluate student viva responses.</string>
 </dict>
 </plist>

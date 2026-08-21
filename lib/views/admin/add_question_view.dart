@@ -5,12 +5,13 @@ import 'package:ophthal_vivaedge/core/constants/app_colors.dart';
 import 'package:ophthal_vivaedge/core/enums/answer_block_type.dart';
 import 'package:ophthal_vivaedge/models/answer_block_model.dart';
 import 'package:ophthal_vivaedge/models/question_model.dart';
-import 'package:ophthal_vivaedge/repositories/mock_question_repository.dart';
+import 'package:ophthal_vivaedge/viewmodels/viva_viewmodel.dart';
 import 'package:ophthal_vivaedge/shared/widgets/app_button.dart';
 import 'package:ophthal_vivaedge/shared/widgets/app_text_field.dart';
 import 'package:ophthal_vivaedge/viewmodels/admin_dashboard_viewmodel.dart';
 import 'package:ophthal_vivaedge/views/widgets/answer_content_renderer.dart';
 import 'package:ophthal_vivaedge/views/widgets/heading_block_editor.dart';
+import 'package:ophthal_vivaedge/views/widgets/image_block_editor.dart';
 import 'package:ophthal_vivaedge/views/widgets/table_block_editor.dart';
 import 'package:ophthal_vivaedge/views/widgets/text_block_editor.dart';
 
@@ -68,6 +69,11 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
           ],
           displayOrder: newOrder,
         ));
+      } else if (type == AnswerBlockType.image) {
+        _blocks.add(AnswerBlockModel.image(
+          filename: '',
+          displayOrder: newOrder,
+        ));
       }
     });
   }
@@ -114,7 +120,7 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
         answerBlocks: _blocks,
       );
 
-      final repo = MockQuestionRepository();
+      final repo = ref.read(questionRepositoryProvider);
       await repo.createQuestion(newQuestion);
       ref.invalidate(adminQuestionsViewModelProvider);
 
@@ -137,22 +143,37 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final scaffoldBg = isDark ? const Color(0xFF0F172A) : AppColors.background;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final borderCol = isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1);
+    final primaryText = isDark ? Colors.white : AppColors.primaryNavy;
+    final secondaryText = isDark ? Colors.white70 : AppColors.textSecondary;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: scaffoldBg,
       appBar: AppBar(
-        title: const Text('Add Viva Question'),
+        title: const Text(
+          'Add Viva Question',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        backgroundColor: isDark ? const Color(0xFF1E293B) : AppColors.primaryNavy,
+        foregroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
           onPressed: () => context.pop(),
         ),
         bottom: TabBar(
           controller: _tabController,
-          labelColor: AppColors.primaryNavy,
-          unselectedLabelColor: AppColors.textSecondary,
-          indicatorColor: AppColors.primaryNavy,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          indicatorColor: Colors.white,
+          indicatorWeight: 3.0,
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13),
           tabs: const [
-            Tab(icon: Icon(Icons.edit_note_rounded), text: 'EDIT & BUILD'),
-            Tab(icon: Icon(Icons.preview_rounded), text: 'STUDENT PREVIEW'),
+            Tab(icon: Icon(Icons.edit_note_rounded, color: Colors.white), text: 'EDIT & BUILD'),
+            Tab(icon: Icon(Icons.preview_rounded, color: Colors.white70), text: 'STUDENT PREVIEW'),
           ],
         ),
       ),
@@ -171,14 +192,19 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Card(
+                          color: cardBg,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            side: BorderSide(color: borderCol, width: 1),
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.all(20.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Question Details',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryText),
                                 ),
                                 const SizedBox(height: 16),
                                 AppTextField(
@@ -203,14 +229,14 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
                         ),
                         const SizedBox(height: 20),
 
-                        const Text(
+                        Text(
                           'Structured Answer Content Blocks',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primaryNavy),
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryText),
                         ),
                         const SizedBox(height: 6),
-                        const Text(
+                        Text(
                           'Construct dynamic text, section headings, and medical comparison tables.',
-                          style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                          style: TextStyle(fontSize: 13, color: secondaryText),
                         ),
                         const SizedBox(height: 16),
 
@@ -241,35 +267,42 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
                                 onMoveUp: index > 0 ? () => _moveBlock(index, -1) : null,
                                 onMoveDown: index < _blocks.length - 1 ? () => _moveBlock(index, 1) : null,
                               );
+                            case AnswerBlockType.image:
+                              return ImageBlockEditor(
+                                block: block,
+                                onChanged: (updated) => setState(() => _blocks[index] = updated),
+                                onDelete: () => _deleteBlock(index),
+                                onMoveUp: index > 0 ? () => _moveBlock(index, -1) : null,
+                                onMoveDown: index < _blocks.length - 1 ? () => _moveBlock(index, 1) : null,
+                              );
                           }
                         }),
 
                         const SizedBox(height: 12),
 
-                        Row(
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
                           children: [
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: () => _addBlock(AnswerBlockType.text),
-                                icon: const Icon(Icons.notes_rounded, size: 16),
-                                label: const Text('+ Text'),
-                              ),
+                            OutlinedButton.icon(
+                              onPressed: () => _addBlock(AnswerBlockType.text),
+                              icon: const Icon(Icons.notes_rounded, size: 16),
+                              label: const Text('+ Text'),
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: () => _addBlock(AnswerBlockType.heading),
-                                icon: const Icon(Icons.title_rounded, size: 16),
-                                label: const Text('+ Heading'),
-                              ),
+                            OutlinedButton.icon(
+                              onPressed: () => _addBlock(AnswerBlockType.heading),
+                              icon: const Icon(Icons.title_rounded, size: 16),
+                              label: const Text('+ Heading'),
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: () => _addBlock(AnswerBlockType.table),
-                                icon: const Icon(Icons.table_chart_outlined, size: 16),
-                                label: const Text('+ Table'),
-                              ),
+                            OutlinedButton.icon(
+                              onPressed: () => _addBlock(AnswerBlockType.table),
+                              icon: const Icon(Icons.table_chart_outlined, size: 16),
+                              label: const Text('+ Table'),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: () => _addBlock(AnswerBlockType.image),
+                              icon: const Icon(Icons.image_outlined, size: 16),
+                              label: const Text('+ Image'),
                             ),
                           ],
                         ),
@@ -300,7 +333,7 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppColors.accentBlue.withOpacity(0.1),
+                          color: AppColors.accentBlue.withOpacity(0.15),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Row(
@@ -319,6 +352,11 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
                       const SizedBox(height: 16),
 
                       Card(
+                        color: cardBg,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          side: BorderSide(color: borderCol, width: 1),
+                        ),
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
                           child: Column(
@@ -328,13 +366,13 @@ class _AddQuestionViewState extends ConsumerState<AddQuestionView> with SingleTi
                                 _questionController.text.isEmpty
                                     ? 'Question prompt will appear here...'
                                     : _questionController.text,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.primaryNavy,
+                                  color: primaryText,
                                 ),
                               ),
-                              const Divider(height: 24),
+                              Divider(height: 24, color: borderCol),
                               const Text(
                                 'CORRECT ANSWER',
                                 style: TextStyle(

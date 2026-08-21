@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ophthal_vivaedge/core/constants/app_colors.dart';
 import 'package:ophthal_vivaedge/shared/widgets/app_button.dart';
+import 'package:ophthal_vivaedge/shared/widgets/app_error_banner.dart';
+import 'package:ophthal_vivaedge/shared/widgets/app_snack_bar.dart';
 import 'package:ophthal_vivaedge/shared/widgets/app_text_field.dart';
 import 'package:ophthal_vivaedge/viewmodels/auth_viewmodel.dart';
 
@@ -18,24 +20,15 @@ class _RegisterViewState extends ConsumerState<RegisterView> with SingleTickerPr
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _collegeController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  String _selectedMbbsYear = 'Final Year MBBS';
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
   late Animation<Offset> _slideAnim;
-
-  final List<String> _mbbsYears = const [
-    '3rd Year MBBS',
-    'Final Year MBBS',
-    'Intern / CRRI',
-    'Postgraduate Resident',
-  ];
 
   @override
   void initState() {
@@ -66,7 +59,6 @@ class _RegisterViewState extends ConsumerState<RegisterView> with SingleTickerPr
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
-    _collegeController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _animController.dispose();
@@ -81,21 +73,28 @@ class _RegisterViewState extends ConsumerState<RegisterView> with SingleTickerPr
           email: _emailController.text.trim(),
           password: _passwordController.text,
           phoneNumber: _phoneController.text.trim(),
-          medicalCollege: _collegeController.text.trim(),
-          mbbsYear: _selectedMbbsYear,
         );
 
     if (success && mounted) {
-      context.go('/student/dashboard');
+      AppSnackBar.showSuccess(context, 'Registration successful! Please log in.');
+      context.go('/auth/login');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authViewModelProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final scaffoldBg = isDark ? const Color(0xFF0F172A) : AppColors.background;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final cardBorder = isDark ? const Color(0xFF334155) : AppColors.border.withOpacity(0.6);
+    final primaryTextColor = isDark ? Colors.white : AppColors.primaryNavy;
+    final secondaryTextColor = isDark ? Colors.white70 : AppColors.textSecondary;
+    final iconColor = isDark ? const Color(0xFF38BDF8) : AppColors.primaryNavy;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: scaffoldBg,
       body: Stack(
         children: [
           // Top Decorative Gradient Arc Header
@@ -166,22 +165,22 @@ class _RegisterViewState extends ConsumerState<RegisterView> with SingleTickerPr
                             opacity: _fadeAnim,
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: cardBg,
                                 borderRadius: BorderRadius.circular(24),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.06),
+                                    color: Colors.black.withOpacity(isDark ? 0.25 : 0.06),
                                     blurRadius: 24,
                                     offset: const Offset(0, 10),
                                   ),
                                   BoxShadow(
-                                    color: AppColors.primaryNavy.withOpacity(0.04),
+                                    color: AppColors.primaryNavy.withOpacity(isDark ? 0.1 : 0.04),
                                     blurRadius: 10,
                                     offset: const Offset(0, 2),
                                   ),
                                 ],
                                 border: Border.all(
-                                  color: AppColors.border.withOpacity(0.6),
+                                  color: cardBorder,
                                   width: 1,
                                 ),
                               ),
@@ -191,46 +190,27 @@ class _RegisterViewState extends ConsumerState<RegisterView> with SingleTickerPr
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
                                   children: [
-                                    const Text(
+                                    Text(
                                       'Join Ophthal VivaEdge',
                                       style: TextStyle(
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold,
-                                        color: AppColors.primaryNavy,
+                                        color: primaryTextColor,
                                         letterSpacing: -0.3,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
-                                    const Text(
+                                    Text(
                                       'Enter your student & medical college credentials',
                                       style: TextStyle(
-                                        color: AppColors.textSecondary,
+                                        color: secondaryTextColor,
                                         fontSize: 13,
                                       ),
                                     ),
                                     const SizedBox(height: 24),
 
                                     if (authState.errorMessage != null) ...[
-                                      Container(
-                                        padding: const EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.errorBg,
-                                          borderRadius: BorderRadius.circular(10),
-                                          border: Border.all(color: AppColors.error.withOpacity(0.3)),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            const Icon(Icons.error_outline_rounded, size: 18, color: AppColors.error),
-                                            const SizedBox(width: 8),
-                                            Expanded(
-                                              child: Text(
-                                                authState.errorMessage!,
-                                                style: const TextStyle(color: AppColors.error, fontSize: 13),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                      AppErrorBanner(message: authState.errorMessage!),
                                       const SizedBox(height: 16),
                                     ],
 
@@ -238,7 +218,7 @@ class _RegisterViewState extends ConsumerState<RegisterView> with SingleTickerPr
                                       label: 'Full Name',
                                       hint: 'e.g. Alex Smith',
                                       controller: _nameController,
-                                      prefixIcon: const Icon(Icons.person_outline_rounded, size: 20, color: AppColors.primaryNavy),
+                                      prefixIcon: Icon(Icons.person_outline_rounded, size: 20, color: iconColor),
                                       validator: (val) =>
                                           (val == null || val.trim().isEmpty) ? 'Please enter your full name' : null,
                                     ),
@@ -249,7 +229,7 @@ class _RegisterViewState extends ConsumerState<RegisterView> with SingleTickerPr
                                       hint: 'e.g. alex@vivaedge.edu',
                                       controller: _emailController,
                                       keyboardType: TextInputType.emailAddress,
-                                      prefixIcon: const Icon(Icons.email_outlined, size: 20, color: AppColors.primaryNavy),
+                                      prefixIcon: Icon(Icons.email_outlined, size: 20, color: iconColor),
                                       validator: (val) =>
                                           (val == null || val.trim().isEmpty) ? 'Please enter your email address' : null,
                                     ),
@@ -260,53 +240,9 @@ class _RegisterViewState extends ConsumerState<RegisterView> with SingleTickerPr
                                       hint: 'e.g. +91 98765 43210',
                                       controller: _phoneController,
                                       keyboardType: TextInputType.phone,
-                                      prefixIcon: const Icon(Icons.phone_outlined, size: 20, color: AppColors.primaryNavy),
+                                      prefixIcon: Icon(Icons.phone_outlined, size: 20, color: iconColor),
                                       validator: (val) =>
                                           (val == null || val.trim().isEmpty) ? 'Please enter your phone number' : null,
-                                    ),
-                                    const SizedBox(height: 16),
-
-                                    AppTextField(
-                                      label: 'Medical College / University',
-                                      hint: 'e.g. Grant Medical College & JJ Hospital',
-                                      controller: _collegeController,
-                                      prefixIcon: const Icon(Icons.local_hospital_outlined, size: 20, color: AppColors.primaryNavy),
-                                      validator: (val) =>
-                                          (val == null || val.trim().isEmpty) ? 'Please enter your medical college' : null,
-                                    ),
-                                    const SizedBox(height: 16),
-
-                                    const Text(
-                                      'MBBS Academic Stage',
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.primaryNavy,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    DropdownButtonFormField<String>(
-                                      value: _selectedMbbsYear,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.primaryNavy,
-                                      ),
-                                      decoration: const InputDecoration(
-                                        prefixIcon: Icon(Icons.school_outlined, size: 20, color: AppColors.primaryNavy),
-                                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                                      ),
-                                      items: _mbbsYears.map((year) {
-                                        return DropdownMenuItem<String>(
-                                          value: year,
-                                          child: Text(year, style: const TextStyle(fontSize: 14, color: AppColors.primaryNavy)),
-                                        );
-                                      }).toList(),
-                                      onChanged: (val) {
-                                        if (val != null) {
-                                          setState(() => _selectedMbbsYear = val);
-                                        }
-                                      },
                                     ),
                                     const SizedBox(height: 16),
 
@@ -315,12 +251,12 @@ class _RegisterViewState extends ConsumerState<RegisterView> with SingleTickerPr
                                       hint: 'Create a secure password',
                                       controller: _passwordController,
                                       obscureText: _obscurePassword,
-                                      prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20, color: AppColors.primaryNavy),
+                                      prefixIcon: Icon(Icons.lock_outline_rounded, size: 20, color: iconColor),
                                       suffixIcon: IconButton(
                                         icon: Icon(
                                           _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                                           size: 20,
-                                          color: AppColors.primaryNavy,
+                                          color: iconColor,
                                         ),
                                         onPressed: () {
                                           setState(() => _obscurePassword = !_obscurePassword);
@@ -336,12 +272,12 @@ class _RegisterViewState extends ConsumerState<RegisterView> with SingleTickerPr
                                       hint: 'Re-enter your password',
                                       controller: _confirmPasswordController,
                                       obscureText: _obscureConfirmPassword,
-                                      prefixIcon: const Icon(Icons.lock_reset_rounded, size: 20, color: AppColors.primaryNavy),
+                                      prefixIcon: Icon(Icons.lock_reset_rounded, size: 20, color: iconColor),
                                       suffixIcon: IconButton(
                                         icon: Icon(
                                           _obscureConfirmPassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                                           size: 20,
-                                          color: AppColors.primaryNavy,
+                                          color: iconColor,
                                         ),
                                         onPressed: () {
                                           setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
@@ -370,9 +306,9 @@ class _RegisterViewState extends ConsumerState<RegisterView> with SingleTickerPr
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          const Text(
+                                          Text(
                                             'Already have an account? ',
-                                            style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                                            style: TextStyle(color: secondaryTextColor, fontSize: 14),
                                           ),
                                           GestureDetector(
                                             onTap: () => context.pop(),

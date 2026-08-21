@@ -14,7 +14,7 @@ class SpeechService {
     Function(SpeechRecognitionError)? onError,
     Function(String)? onStatus,
   }) async {
-    if (_isInitialized) return true;
+    if (_isInitialized && _speech.isAvailable) return true;
 
     final micPermission = await Permission.microphone.request();
     if (!micPermission.isGranted) {
@@ -25,6 +25,7 @@ class SpeechService {
       _isInitialized = await _speech.initialize(
         onError: onError,
         onStatus: onStatus,
+        debugLogging: true,
       );
     } catch (_) {
       _isInitialized = false;
@@ -37,11 +38,13 @@ class SpeechService {
     required Function(String transcript) onResult,
     required Function() onListeningStarted,
     required Function() onListeningStopped,
+    Function(SpeechRecognitionError)? onError,
+    Function(String)? onStatus,
   }) async {
-    if (!_isInitialized) {
-      final initialized = await initialize();
-      if (!initialized) {
-        throw Exception('Microphone permission or speech engine unavailable');
+    if (!_isInitialized || !_speech.isAvailable) {
+      _isInitialized = await initialize(onError: onError, onStatus: onStatus);
+      if (!_isInitialized) {
+        throw Exception('Microphone permission or speech recognition service unavailable on this device.');
       }
     }
 
@@ -51,11 +54,16 @@ class SpeechService {
 
     await _speech.listen(
       onResult: (SpeechRecognitionResult result) {
-        onResult(result.recognizedWords);
-        if (result.finalResult) {
-          onListeningStopped();
+        if (result.recognizedWords.isNotEmpty) {
+          onResult(result.recognizedWords);
         }
       },
+      listenFor: const Duration(seconds: 90),
+      pauseFor: const Duration(seconds: 8),
+      partialResults: true,
+      localeId: 'en_US',
+      cancelOnError: false,
+      listenMode: ListenMode.dictation,
     );
   }
 
