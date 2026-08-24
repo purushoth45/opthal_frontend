@@ -109,8 +109,12 @@ class ApiClient {
       String errorMessage = response.body.isNotEmpty ? response.body : 'Server error occurred (${response.statusCode})';
       try {
         final body = jsonDecode(response.body);
-        if (body is Map && body.containsKey('message')) {
-          errorMessage = body['message'];
+        if (body is Map) {
+          if (body.containsKey('error') && body['error'] != null && body['error'].toString().isNotEmpty) {
+            errorMessage = body['error'].toString();
+          } else if (body.containsKey('message') && body['message'] != null && body['message'].toString().isNotEmpty) {
+            errorMessage = body['message'].toString();
+          }
         }
       } catch (_) {}
       throw Exception(errorMessage);

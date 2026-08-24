@@ -119,21 +119,41 @@ class AdminDashboardView extends ConsumerWidget {
                               style: TextStyle(color: secondaryText, fontSize: 13.5),
                             ),
                             const SizedBox(height: 14),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton.icon(
-                                onPressed: () => context.push('/admin/questions/add'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.accentBlue,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton.icon(
+                                    onPressed: () => context.push('/admin/users'),
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: primaryText,
+                                      side: BorderSide(color: borderCol),
+                                      backgroundColor: cardBg,
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    icon: const Icon(Icons.people_alt_rounded, size: 18, color: AppColors.accentBlue),
+                                    label: const Text('Manage Users', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                                   ),
                                 ),
-                                icon: const Icon(Icons.add_rounded, size: 20),
-                                label: const Text('+ Add Question', style: TextStyle(fontWeight: FontWeight.bold)),
-                              ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: ElevatedButton.icon(
+                                    onPressed: () => context.push('/admin/questions/add'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.accentBlue,
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    icon: const Icon(Icons.add_rounded, size: 18),
+                                    label: const Text('+ Add Question', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         );
@@ -163,18 +183,37 @@ class AdminDashboardView extends ConsumerWidget {
                             ),
                           ),
                           const SizedBox(width: 16),
-                          ElevatedButton.icon(
-                            onPressed: () => context.push('/admin/questions/add'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.accentBlue,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                          Row(
+                            children: [
+                              OutlinedButton.icon(
+                                onPressed: () => context.push('/admin/users'),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: primaryText,
+                                  side: BorderSide(color: borderCol),
+                                  backgroundColor: cardBg,
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                icon: const Icon(Icons.people_alt_rounded, size: 18, color: AppColors.accentBlue),
+                                label: const Text('Manage Users', style: TextStyle(fontWeight: FontWeight.bold)),
                               ),
-                            ),
-                            icon: const Icon(Icons.add_rounded, size: 20),
-                            label: const Text('+ Add Question', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const SizedBox(width: 12),
+                              ElevatedButton.icon(
+                                onPressed: () => context.push('/admin/questions/add'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.accentBlue,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                icon: const Icon(Icons.add_rounded, size: 20),
+                                label: const Text('+ Add Question', style: TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                            ],
                           ),
                         ],
                       );
