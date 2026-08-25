@@ -131,6 +131,31 @@ class _SplashViewState extends ConsumerState<SplashView> with TickerProviderStat
             ),
           ),
 
+          // Saveetha Campus Background Image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/saveetha_bg.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          // Gradient Overlay for contrast and readability
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFF091827).withValues(alpha: 0.72),
+                    const Color(0xFF0F2942).withValues(alpha: 0.55),
+                    const Color(0xFF163E63).withValues(alpha: 0.68),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+            ),
+          ),
+
           // Top right subtle ambient light circle
           Positioned(
             top: -100,

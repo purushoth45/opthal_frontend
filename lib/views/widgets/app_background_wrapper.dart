@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 
 class AppBackgroundWrapper extends StatelessWidget {
   final Widget child;
+  final String? backgroundImagePath;
+  final double backgroundImageOpacity;
 
   const AppBackgroundWrapper({
     super.key,
     required this.child,
+    this.backgroundImagePath,
+    this.backgroundImageOpacity = 0.12,
   });
 
   @override
@@ -44,6 +48,18 @@ class AppBackgroundWrapper extends StatelessWidget {
           ),
         ),
 
+        // Optional Background Image (e.g. Saveetha Campus with reduced opacity)
+        if (backgroundImagePath != null)
+          Positioned.fill(
+            child: Opacity(
+              opacity: backgroundImageOpacity,
+              child: Image.asset(
+                backgroundImagePath!,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+
         // Glowing Ambient Light Orb (Top Right)
         Positioned(
           top: -60,
@@ -56,11 +72,11 @@ class AppBackgroundWrapper extends StatelessWidget {
               gradient: RadialGradient(
                 colors: isDark
                     ? [
-                        const Color(0xFF38BDF8).withOpacity(0.35),
+                        const Color(0xFF38BDF8).withValues(alpha: 0.35),
                         Colors.transparent,
                       ]
                     : [
-                        const Color(0xFF60A5FA).withOpacity(0.40),
+                        const Color(0xFF60A5FA).withValues(alpha: 0.40),
                         Colors.transparent,
                       ],
               ),
@@ -80,11 +96,11 @@ class AppBackgroundWrapper extends StatelessWidget {
               gradient: RadialGradient(
                 colors: isDark
                     ? [
-                        const Color(0xFF818CF8).withOpacity(0.25),
+                        const Color(0xFF818CF8).withValues(alpha: 0.25),
                         Colors.transparent,
                       ]
                     : [
-                        const Color(0xFF818CF8).withOpacity(0.30),
+                        const Color(0xFF818CF8).withValues(alpha: 0.30),
                         Colors.transparent,
                       ],
               ),
