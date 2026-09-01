@@ -97,12 +97,20 @@ class _OnboardingViewState extends State<OnboardingView> {
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(8),
+                              width: 32,
+                              height: 32,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.15),
-                                shape: BoxShape.circle,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.3),
+                                  width: 1,
+                                ),
                               ),
-                              child: const Icon(Icons.remove_red_eye_rounded, size: 20, color: Colors.white),
+                              clipBehavior: Clip.antiAlias,
+                              child: Image.asset(
+                                'assets/images/app_icon.png',
+                                fit: BoxFit.cover,
+                              ),
                             ),
                             const SizedBox(width: 10),
                             const Text(

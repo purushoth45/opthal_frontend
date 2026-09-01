@@ -146,27 +146,31 @@ class _LoginViewState extends ConsumerState<LoginView> with SingleTickerProvider
                           child: Column(
                             children: [
                               Container(
-                                padding: const EdgeInsets.all(20),
+                                width: 88,
+                                height: 88,
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
+                                  borderRadius: BorderRadius.circular(22),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.35),
+                                    width: 1.5,
+                                  ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.12),
+                                      color: Colors.black.withValues(alpha: 0.18),
                                       blurRadius: 20,
                                       offset: const Offset(0, 8),
                                     ),
                                     BoxShadow(
-                                      color: AppColors.accentBlue.withOpacity(0.25),
-                                      blurRadius: 30,
+                                      color: AppColors.accentBlue.withValues(alpha: 0.3),
+                                      blurRadius: 28,
                                       spreadRadius: 2,
                                     ),
                                   ],
                                 ),
-                                child: const Icon(
-                                  Icons.remove_red_eye_rounded,
-                                  size: 46,
-                                  color: AppColors.primaryNavy,
+                                clipBehavior: Clip.antiAlias,
+                                child: Image.asset(
+                                  'assets/images/app_icon.png',
+                                  fit: BoxFit.cover,
                                 ),
                               ),
                               const SizedBox(height: 16),
