@@ -30,7 +30,7 @@ class UserModel {
       phoneNumber: json['phoneNumber'] as String? ?? json['phone'] as String?,
       medicalCollege: json['medicalCollege'] as String? ?? json['college'] as String?,
       mbbsYear: json['mbbsYear'] as String? ?? json['year'] as String?,
-      role: UserRoleX.fromString(json['role'] as String? ?? 'STUDENT'),
+      role: UserRoleX.fromString(json['role'] as String? ?? 'USER'),
     );
   }
 
@@ -40,6 +40,7 @@ class UserModel {
       'name': name,
       'email': email,
       if (phoneNumber != null) 'phoneNumber': phoneNumber,
+      if (phoneNumber != null) 'phone': phoneNumber,
       if (medicalCollege != null) 'medicalCollege': medicalCollege,
       if (mbbsYear != null) 'mbbsYear': mbbsYear,
       'role': role.value,

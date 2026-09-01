@@ -31,6 +31,8 @@ class _StudentDashboardViewState extends ConsumerState<StudentDashboardView> {
     final cardBorder = Colors.white.withOpacity(0.35);
 
     return AppBackgroundWrapper(
+      backgroundImagePath: 'assets/images/saveetha_bg.png',
+      backgroundImageOpacity: 0.12,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(

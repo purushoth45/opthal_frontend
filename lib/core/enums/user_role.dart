@@ -9,14 +9,22 @@ extension UserRoleX on UserRole {
       case UserRole.admin:
         return 'ADMIN';
       case UserRole.student:
-        return 'STUDENT';
+        return 'USER';
     }
   }
 
-  
+  String get displayName {
+    switch (this) {
+      case UserRole.admin:
+        return 'ADMIN';
+      case UserRole.student:
+        return 'USER';
+    }
+  }
 
   static UserRole fromString(String role) {
-    if (role.toUpperCase() == 'ADMIN') {
+    final upper = role.toUpperCase().trim();
+    if (upper == 'ADMIN' || upper == 'ROLE_ADMIN') {
       return UserRole.admin;
     }
     return UserRole.student;

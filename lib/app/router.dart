@@ -7,6 +7,7 @@ import 'package:ophthal_vivaedge/views/admin/admin_dashboard_view.dart';
 import 'package:ophthal_vivaedge/views/admin/edit_question_view.dart';
 import 'package:ophthal_vivaedge/views/admin/question_list_view.dart';
 import 'package:ophthal_vivaedge/views/admin/question_preview_view.dart';
+import 'package:ophthal_vivaedge/views/admin/user_management_view.dart';
 import 'package:ophthal_vivaedge/views/auth/login_view.dart';
 import 'package:ophthal_vivaedge/views/auth/register_view.dart';
 import 'package:ophthal_vivaedge/views/main_shell_view.dart';
@@ -108,6 +109,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/admin/dashboard',
         builder: (context, state) => const AdminDashboardView(),
+      ),
+      GoRoute(
+        path: '/admin/users',
+        builder: (context, state) => const UserManagementView(),
       ),
       GoRoute(
         path: '/admin/questions',
